@@ -15,12 +15,9 @@ dist/
 venv/
 
 # Common credentials
-tests/credentials.json
-*creds*
+*cred*
 *secret*
 *pass*
-tests/credentials.json
-test.json
 
 # Common files that might contain private data
 *.pem

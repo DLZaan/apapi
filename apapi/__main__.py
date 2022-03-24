@@ -2,7 +2,7 @@
 
 
 def main():
-    raise NotImplementedError('This feature has not been implemented yet')
+    raise NotImplementedError("This feature has not been implemented yet")
 
 
 if __name__ == "__main__":

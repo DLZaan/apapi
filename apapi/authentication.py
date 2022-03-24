@@ -15,5 +15,5 @@ class AnaplanAuth(AuthBase):
         self.token = token
 
     def __call__(self, r):
-        r.headers['Authorization'] = self.token
+        r.headers["Authorization"] = self.token
         return r
