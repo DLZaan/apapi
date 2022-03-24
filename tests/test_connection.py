@@ -2,44 +2,43 @@
 import apapi
 import json
 
-with open('tests/test.json', 'r') as f:
-    test = json.loads(f.read())
+with open("tests/test.json", "r") as f:
+    t = json.loads(f.read())
 
-test_connection = apapi.Connection(f'{test["email"]}:{test["password"]}')
+t_conn = apapi.Connection(f"{t['email']}:{t['password']}")
 
-me = test_connection.get_me()
+me = t_conn.get_me()
 assert me.ok
-assert me.json()['user']['email'] == test["email"]
+assert me.json()["user"]["email"] == t["email"]
 
-also_me = test_connection.get_user(me.json()['user']['id'])
+also_me = t_conn.get_user(me.json()["user"]["id"])
 assert also_me.ok
-assert also_me.json()['user'] == me.json()['user']
+assert also_me.json()["user"] == me.json()["user"]
 
-test_connection.refresh_token()  # manual
+t_conn.refresh_token()  # manual refresh check, not needed during normal usage
 
-assert test_connection.get_users().ok
-assert test_connection.get_workspaces().ok
-assert test_connection.get_models().ok
-
-assert test_connection.get_exports(test['workspace_id'], test['model_id']).ok
-assert test_connection.get_imports(test['workspace_id'], test['model_id']).ok
-assert test_connection.get_actions(test['workspace_id'], test['model_id']).ok
-assert test_connection.get_processes(test['workspace_id'], test['model_id']).ok
-assert test_connection.get_files(test['workspace_id'], test['model_id']).ok
+assert t_conn.get_users().ok
+assert t_conn.get_workspaces().ok
+assert t_conn.get_models().ok
+assert t_conn.get_exports(t["workspace_id"], t["model_id"]).ok
+assert t_conn.get_imports(t["workspace_id"], t["model_id"]).ok
+assert t_conn.get_actions(t["workspace_id"], t["model_id"]).ok
+assert t_conn.get_processes(t["workspace_id"], t["model_id"]).ok
+assert t_conn.get_files(t["workspace_id"], t["model_id"]).ok
 
 # requires: export to CSV, and import from CSV using same file template
-assert test_connection.run_export(test['workspace_id'], test['model_id'], test['export_id']).ok
-# we use the fact that for exports action_id=file_id
-data = test_connection.download_data(test['workspace_id'], test['model_id'], test['export_id'])
-test_connection.upload_data(test['workspace_id'], test['model_id'], test['file_id'], data)
-assert test_connection.run_import(test['workspace_id'], test['model_id'], test['import_id']).ok
+assert t_conn.run_export(t["workspace_id"], t["model_id"], t["export_id"]).ok
+# we use the fact (undocumented!) that for exports action_id=file_id
+data = t_conn.download_data(t["workspace_id"], t["model_id"], t["export_id"])
+t_conn.upload_data(t["workspace_id"], t["model_id"], t["file_id"], data)
+assert t_conn.run_import(t["workspace_id"], t["model_id"], t["import_id"]).ok
+# requires: deletion action
+assert t_conn.run_action(t["workspace_id"], t["model_id"], t["action_id"]).ok
+# requires: process with import (column1: Users, column2: Date, Versions: ask each time)
+i_data = f"{t['email']},2022-04-01".encode()
+mapping = apapi.utils.get_generic_data()
+mapping["mappingParameters"] = [{"entityType": "Version", "entityName": "Actual"}]
+assert t_conn.upload_data(t["workspace_id"], t["model_id"], t["file_id_2"], i_data).ok
+assert t_conn.run_process(t["workspace_id"], t["model_id"], t["process_id"], mapping).ok
 
-# requires: deletion action, and some process that have import with Users dimension and selection of Versions
-assert test_connection.run_action(test['workspace_id'], test['model_id'], test['action_id']).ok
-import_data = f'{test["email"]},2022-03-20'.encode('ascii')
-import_mapping = apapi.utils.get_generic_data()
-import_mapping["mappingParameters"] = [{"entityType": "Version", "entityName": "Actual"}]
-assert test_connection.upload_data(test['workspace_id'], test['model_id'], test['file_id_2'], import_data).ok
-assert test_connection.run_process(test['workspace_id'], test['model_id'], test['process_id'], import_mapping).ok
-
-test_connection.close()
+t_conn.close()
