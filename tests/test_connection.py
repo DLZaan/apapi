@@ -19,7 +19,24 @@ t_conn.refresh_token()  # manual refresh check, not needed during normal usage
 
 assert t_conn.get_users().ok
 assert t_conn.get_workspaces().ok
+assert t_conn.get_ws_models(t["workspace_id"]).ok
 assert t_conn.get_models().ok
+assert t_conn.get_model(t["model_id"]).ok
+
+lists = t_conn.get_lists(t["model_id"])
+assert lists.ok
+list_id = lists.json()["lists"][0]["id"]
+assert t_conn.get_list(t["model_id"], list_id).ok
+assert t_conn.get_list_items(t["model_id"], list_id).ok
+
+modules = t_conn.get_modules(t["model_id"])
+assert modules.ok
+# requires at least one module
+module_id = modules.json()["modules"][0]["id"]
+assert t_conn.get_module_views(t["model_id"], module_id).ok
+assert t_conn.get_views(t["model_id"]).ok
+assert t_conn.get_view(t["model_id"], module_id).ok
+
 assert t_conn.get_exports(t["workspace_id"], t["model_id"]).ok
 assert t_conn.get_imports(t["workspace_id"], t["model_id"]).ok
 assert t_conn.get_actions(t["workspace_id"], t["model_id"]).ok

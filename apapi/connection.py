@@ -54,7 +54,7 @@ class Connection:
 
     def authenticate(self) -> None:
         """Acquire Anaplan Authentication Service Token"""
-        self.session.headers = utils.get_json_headers()
+        self.session.headers = utils.DEFAULT_HEADERS
         if self._auth_type == utils.AuthType.BASIC:
             auth_string = str(
                 base64.b64encode(self._credentials.encode("utf-8")).decode("utf-8")
@@ -140,6 +140,47 @@ class Connection:
             "GET", f"{self._api_main_url}/models/{model_id}", {"modelDetails": details}
         )
 
+    def get_lists(self, model_id: str) -> Response:
+        return self.request("GET", f"{self._api_main_url}/models/{model_id}/lists")
+
+    def get_list(self, model_id: str, list_id: str) -> Response:
+        return self.request(
+            "GET", f"{self._api_main_url}/models/{model_id}/lists/{list_id}"
+        )
+
+    def get_list_items(
+        self, model_id: str, list_id: str, details: bool = True
+    ) -> Response:
+        return self.request(
+            "GET",
+            f"{self._api_main_url}/models/{model_id}/lists/{list_id}/items",
+            {"includeAll": details},
+        )
+
+    def get_modules(self, model_id: str) -> Response:
+        return self.request("GET", f"{self._api_main_url}/models/{model_id}/modules")
+
+    def get_views(self, model_id: str, details: bool = True) -> Response:
+        return self.request(
+            "GET",
+            f"{self._api_main_url}/models/{model_id}/views",
+            {"includesubsidiaryviews": details},
+        )
+
+    def get_module_views(
+        self, model_id: str, module_id: str, details: bool = True
+    ) -> Response:
+        return self.request(
+            "GET",
+            f"{self._api_main_url}/models/{model_id}/modules/{module_id}/views",
+            {"includesubsidiaryviews": details},
+        )
+
+    def get_view(self, model_id: str, view_id: str) -> Response:
+        return self.request(
+            "GET", f"{self._api_main_url}/models/{model_id}/views/{view_id}"
+        )
+
     def _get_actions(
         self, workspace_id: str, model_id: str, action_type: str
     ) -> Response:
@@ -169,7 +210,7 @@ class Connection:
         return self.session.request(
             "PUT",
             f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/files/{file_id}",
-            headers=utils.get_upload_headers(),
+            headers=utils.DEFAULT_UPLOAD_HEADERS,
             data=data,
             timeout=self.timeout,
         )
@@ -184,7 +225,7 @@ class Connection:
             chunk = self.session.request(
                 "GET",
                 f"{url}/{chunk_id['id']}",
-                headers=utils.get_download_headers(),
+                headers=utils.DEFAULT_DOWNLOAD_HEADERS,
                 timeout=self.timeout,
             )
             if not chunk.ok:

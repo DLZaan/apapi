@@ -14,22 +14,14 @@ from requests.packages.urllib3.util.retry import Retry
 AUTH_URL = "https://auth.anaplan.com"
 API_URL = "https://api.anaplan.com"
 
+DEFAULT_HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
+DEFAULT_UPLOAD_HEADERS = {"Content-Type": "application/octet-stream"}
+DEFAULT_DOWNLOAD_HEADERS = {"Accept": "application/octet-stream"}
+
 
 class AuthType(enum.Enum):
     BASIC = 1
     CERT = 2
-
-
-def get_json_headers() -> dict:
-    return {"Content-Type": "application/json"}
-
-
-def get_upload_headers() -> dict:
-    return {"Content-Type": "application/octet-stream"}
-
-
-def get_download_headers() -> dict:
-    return {"Accept": "application/octet-stream"}
 
 
 def get_generic_data() -> dict:
