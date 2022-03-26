@@ -12,7 +12,7 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
 AUTH_URL = "https://auth.anaplan.com"
-API_URL = "https://api.anaplan.com/2/0"
+API_URL = "https://api.anaplan.com"
 
 
 class AuthType(enum.Enum):
@@ -36,12 +36,12 @@ def get_generic_data() -> dict:
     return {"localeName": "en_US"}
 
 
-def get_generic_session(retry_count=3) -> Session:
+def get_generic_session(retry_count: int = 3) -> Session:
     adapter = HTTPAdapter(
         max_retries=Retry(
             total=retry_count,
             allowed_methods=None,  # this means retry on ANY method (including POST)
-            status_forcelist=(429, 500, 502, 503, 504),
+            status_forcelist=(407, 410, 429, 500, 502, 503, 504),
         )
     )
     session = Session()

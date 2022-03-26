@@ -8,6 +8,7 @@ This module provides a Connection object to use for calling API endpoints
 import base64
 import json
 import threading
+from requests import Response, Session
 import time
 
 from apapi import utils
@@ -19,17 +20,17 @@ class Connection:
 
     def __init__(
         self,
-        credentials,
-        auth_type=utils.AuthType.BASIC,
-        session=utils.get_generic_session(),
-        auth_url=utils.AUTH_URL,
-        api_url=utils.API_URL,
+        credentials: str,
+        auth_type: utils.AuthType = utils.AuthType.BASIC,
+        session: Session = utils.get_generic_session(),
+        auth_url: str = utils.AUTH_URL,
+        api_url: str = utils.API_URL,
     ):
 
         self._credentials = credentials
         self._auth_type = auth_type
         self._auth_url = auth_url
-        self._api_url = api_url
+        self._api_main_url = f"{api_url}/2/0"
         self._timer = None
         self._lock = threading.Lock()
 
@@ -44,14 +45,14 @@ class Connection:
     def __exit__(self, *args):
         self.close()
 
-    def _handle_token(self, token_info: dict):
+    def _handle_token(self, token_info: dict) -> None:
         self.session.auth = AnaplanAuth("AnaplanAuthToken " + token_info["tokenValue"])
         self._timer = threading.Timer(
             token_info["expiresAt"] / 1000 - time.time(), self.refresh_token
         )
         self._timer.start()
 
-    def authenticate(self):
+    def authenticate(self) -> None:
         """Acquire Anaplan Authentication Service Token"""
         self.session.headers = utils.get_json_headers()
         if self._auth_type == utils.AuthType.BASIC:
@@ -72,7 +73,7 @@ class Connection:
             raise Exception("Raise exception - unsupported auth type/wrong format")
         self._handle_token(response.json()["tokenInfo"])
 
-    def refresh_token(self):
+    def refresh_token(self) -> None:
         """Refresh Anaplan Authentication Service Token"""
         # skip if other thread is already taking care of refreshing the token
         if not self._lock.locked():
@@ -85,13 +86,15 @@ class Connection:
                 self._timer.cancel()
                 self._handle_token(response.json()["tokenInfo"])
 
-    def close(self):
+    def close(self) -> None:
         """Logout from Anaplan Authentication Service"""
         self._timer.cancel()
         self.session.post(f"{self._auth_url}/token/logout", timeout=self.timeout)
         self.session.close()
 
-    def request(self, method, url, params=None, data=None):
+    def request(
+        self, method: str, url: str, params: dict = None, data: bytes = None
+    ) -> Response:
         response = self.session.request(
             method, url, params, json.dumps(data), timeout=self.timeout
         )
@@ -99,74 +102,80 @@ class Connection:
             raise Exception(f"Unable to reach {url}: {response.text}")
         return response
 
-    def get_users(self):
-        return self.request("GET", f"{self._api_url}/users")
+    def get_users(self) -> Response:
+        return self.request("GET", f"{self._api_main_url}/users")
 
-    def get_user(self, user_id):
-        return self.request("GET", f"{self._api_url}/users/{user_id}")
+    def get_user(self, user_id: str) -> Response:
+        return self.request("GET", f"{self._api_main_url}/users/{user_id}")
 
-    def get_me(self):
-        return self.request("GET", f"{self._api_url}/users/me")
+    def get_me(self) -> Response:
+        return self.request("GET", f"{self._api_main_url}/users/me")
 
-    def get_workspaces(self, details=True):
+    def get_workspaces(self, details: bool = True) -> Response:
         return self.request(
-            "GET", f"{self._api_url}/workspaces", {"tenantDetails": details}
+            "GET", f"{self._api_main_url}/workspaces", {"tenantDetails": details}
         )
 
-    def get_workspace(self, workspace_id, details=True):
+    def get_workspace(self, workspace_id: str, details: bool = True) -> Response:
         return self.request(
             "GET",
-            f"{self._api_url}/workspaces/{workspace_id}",
+            f"{self._api_main_url}/workspaces/{workspace_id}",
             {"tenantDetails": details},
         )
 
-    def get_models(self, details=True):
-        return self.request("GET", f"{self._api_url}/models", {"modelDetails": details})
+    def get_models(self, details=True) -> Response:
+        return self.request(
+            "GET", f"{self._api_main_url}/models", {"modelDetails": details}
+        )
 
-    def get_ws_models(self, workspace_id, details=True):
+    def get_ws_models(self, workspace_id: str, details: bool = True) -> Response:
         return self.request(
             "GET",
-            f"{self._api_url}/workspaces/{workspace_id}/models",
+            f"{self._api_main_url}/workspaces/{workspace_id}/models",
             {"modelDetails": details},
         )
 
-    def get_model(self, model_id, details=True):
+    def get_model(self, model_id: str, details: bool = True) -> Response:
         return self.request(
-            "GET", f"{self._api_url}/models/{model_id}", {"modelDetails": details}
+            "GET", f"{self._api_main_url}/models/{model_id}", {"modelDetails": details}
         )
 
-    def _get_actions(self, workspace_id, model_id, action_type):
+    def _get_actions(
+        self, workspace_id: str, model_id: str, action_type: str
+    ) -> Response:
         return self.request(
             "GET",
-            f"{self._api_url}/workspaces/{workspace_id}/models/{model_id}/{action_type}",
+            f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/{action_type}",
         )
 
-    def get_imports(self, workspace_id, model_id):
+    def get_imports(self, workspace_id: str, model_id: str) -> Response:
         return self._get_actions(workspace_id, model_id, "imports")
 
-    def get_exports(self, workspace_id, model_id):
+    def get_exports(self, workspace_id: str, model_id: str) -> Response:
         return self._get_actions(workspace_id, model_id, "exports")
 
-    def get_actions(self, workspace_id, model_id):
+    def get_actions(self, workspace_id: str, model_id: str) -> Response:
         return self._get_actions(workspace_id, model_id, "actions")
 
-    def get_processes(self, workspace_id, model_id):
+    def get_processes(self, workspace_id: str, model_id: str) -> Response:
         return self._get_actions(workspace_id, model_id, "processes")
 
-    def get_files(self, workspace_id, model_id):
+    def get_files(self, workspace_id: str, model_id: str) -> Response:
         return self._get_actions(workspace_id, model_id, "files")
 
-    def upload_data(self, workspace_id, model_id, file_id, data):
+    def upload_data(
+        self, workspace_id: str, model_id: str, file_id: str, data: bytes
+    ) -> Response:
         return self.session.request(
             "PUT",
-            f"{self._api_url}/workspaces/{workspace_id}/models/{model_id}/files/{file_id}",
+            f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/files/{file_id}",
             headers=utils.get_upload_headers(),
             data=data,
             timeout=self.timeout,
         )
 
-    def download_data(self, workspace_id, model_id, file_id):
-        url = f"{self._api_url}/workspaces/{workspace_id}/models/{model_id}/files/{file_id}/chunks"
+    def download_data(self, workspace_id: str, model_id: str, file_id: str) -> bytes:
+        url = f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/files/{file_id}/chunks"
         response = self.request("GET", url)
         if not (response.ok and response.json()["meta"]["paging"]["currentPageSize"]):
             raise Exception(f"Unable to get chunks count for a file {file_id}")
@@ -185,28 +194,32 @@ class Connection:
 
     def _run_action(
         self,
-        workspace_id,
-        model_id,
-        action_id,
-        action_type,
+        workspace_id: str,
+        model_id: str,
+        action_id: str,
+        action_type: str,
         data=None,
-    ):
+    ) -> Response:
         if not data:
             data = utils.get_generic_data()
         return self.request(
             "POST",
-            f"{self._api_url}/workspaces/{workspace_id}/models/{model_id}/{action_type}/{action_id}/tasks",
+            f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/{action_type}/{action_id}/tasks",
             data=data,
         )
 
-    def run_import(self, workspace_id, model_id, action_id, data=None):
+    def run_import(
+        self, workspace_id: str, model_id: str, action_id: str, data=None
+    ) -> Response:
         return self._run_action(workspace_id, model_id, action_id, "imports", data)
 
-    def run_export(self, workspace_id, model_id, action_id):
+    def run_export(self, workspace_id: str, model_id: str, action_id: str) -> Response:
         return self._run_action(workspace_id, model_id, action_id, "exports")
 
-    def run_action(self, workspace_id, model_id, action_id):
+    def run_action(self, workspace_id: str, model_id: str, action_id: str) -> Response:
         return self._run_action(workspace_id, model_id, action_id, "actions")
 
-    def run_process(self, workspace_id, model_id, action_id, data=None):
+    def run_process(
+        self, workspace_id: str, model_id: str, action_id: str, data=None
+    ) -> Response:
         return self._run_action(workspace_id, model_id, action_id, "processes", data)
