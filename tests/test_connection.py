@@ -15,7 +15,8 @@ also_me = t_conn.get_user(me.json()["user"]["id"])
 assert also_me.ok
 assert also_me.json()["user"] == me.json()["user"]
 
-t_conn.refresh_token()  # manual refresh check, not needed during normal usage
+# manual token refresh, normally not needed as it should auto refresh every 30 minutes
+t_conn.refresh_token()
 
 assert t_conn.get_users().ok
 assert t_conn.get_workspaces().ok
@@ -25,6 +26,7 @@ assert t_conn.get_model(t["model_id"]).ok
 
 lists = t_conn.get_lists(t["model_id"])
 assert lists.ok
+# requires at least one list (should always be met, Organization is always present)
 list_id = lists.json()["lists"][0]["id"]
 assert t_conn.get_list(t["model_id"], list_id).ok
 assert t_conn.get_list_items(t["model_id"], list_id).ok

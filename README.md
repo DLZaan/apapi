@@ -15,7 +15,7 @@ Forecast,-3,😂
 >>> my_connection.upload_data(workspace_id, model_id, file_id, data)
 >>> my_connection.run_import(workspace_id, model_id, import_id)
 ```
-Check `tests/test_connection.py` for more examples and hints about usage.
+Check [tests/test_connection.py](tests/test_connection.py) for more examples and hints about usage.
 
 ## Installing Anaplan Python API and Supported Versions
 

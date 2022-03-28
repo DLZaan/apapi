@@ -34,8 +34,9 @@ class Connection:
         self._timer = None
         self._lock = threading.Lock()
 
-        self.timeout = 3
-        self.session = session
+        self.details: bool = True
+        self.timeout: float = 3.5
+        self.session: Session = session
 
         self.authenticate()
 
@@ -47,6 +48,7 @@ class Connection:
 
     def _handle_token(self, token_info: dict) -> None:
         self.session.auth = AnaplanAuth("AnaplanAuthToken " + token_info["tokenValue"])
+        # Anaplan yields "expiresAt" in ms, that's why we need to divide it by 1000
         self._timer = threading.Timer(
             token_info["expiresAt"] / 1000 - time.time(), self.refresh_token
         )
@@ -111,9 +113,11 @@ class Connection:
     def get_me(self) -> Response:
         return self.request("GET", f"{self._api_main_url}/users/me")
 
-    def get_workspaces(self, details: bool = True) -> Response:
+    def get_workspaces(self, details: bool = None) -> Response:
         return self.request(
-            "GET", f"{self._api_main_url}/workspaces", {"tenantDetails": details}
+            "GET",
+            f"{self._api_main_url}/workspaces",
+            {"tenantDetails": self.details if details is None else details},
         )
 
     def get_workspace(self, workspace_id: str, details: bool = True) -> Response:
@@ -123,21 +127,25 @@ class Connection:
             {"tenantDetails": details},
         )
 
-    def get_models(self, details=True) -> Response:
+    def get_models(self, details: bool = None) -> Response:
         return self.request(
-            "GET", f"{self._api_main_url}/models", {"modelDetails": details}
+            "GET",
+            f"{self._api_main_url}/models",
+            {"modelDetails": self.details if details is None else details},
         )
 
-    def get_ws_models(self, workspace_id: str, details: bool = True) -> Response:
+    def get_ws_models(self, workspace_id: str, details: bool = None) -> Response:
         return self.request(
             "GET",
             f"{self._api_main_url}/workspaces/{workspace_id}/models",
-            {"modelDetails": details},
+            {"modelDetails": self.details if details is None else details},
         )
 
-    def get_model(self, model_id: str, details: bool = True) -> Response:
+    def get_model(self, model_id: str, details: bool = None) -> Response:
         return self.request(
-            "GET", f"{self._api_main_url}/models/{model_id}", {"modelDetails": details}
+            "GET",
+            f"{self._api_main_url}/models/{model_id}",
+            {"modelDetails": self.details if details is None else details},
         )
 
     def get_lists(self, model_id: str) -> Response:
@@ -149,31 +157,31 @@ class Connection:
         )
 
     def get_list_items(
-        self, model_id: str, list_id: str, details: bool = True
+        self, model_id: str, list_id: str, details: bool = None
     ) -> Response:
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/lists/{list_id}/items",
-            {"includeAll": details},
+            {"includeAll": self.details if details is None else details},
         )
 
     def get_modules(self, model_id: str) -> Response:
         return self.request("GET", f"{self._api_main_url}/models/{model_id}/modules")
 
-    def get_views(self, model_id: str, details: bool = True) -> Response:
+    def get_views(self, model_id: str, details: bool = None) -> Response:
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/views",
-            {"includesubsidiaryviews": details},
+            {"includesubsidiaryviews": self.details if details is None else details},
         )
 
     def get_module_views(
-        self, model_id: str, module_id: str, details: bool = True
+        self, model_id: str, module_id: str, details: bool = None
     ) -> Response:
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/modules/{module_id}/views",
-            {"includesubsidiaryviews": details},
+            {"includesubsidiaryviews": self.details if details is None else details},
         )
 
     def get_view(self, model_id: str, view_id: str) -> Response:
@@ -241,7 +249,7 @@ class Connection:
         action_type: str,
         data=None,
     ) -> Response:
-        if not data:
+        if data is None:
             data = utils.get_generic_data()
         return self.request(
             "POST",
