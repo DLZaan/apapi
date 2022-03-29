@@ -17,15 +17,12 @@ API_URL = "https://api.anaplan.com"
 DEFAULT_HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
 DEFAULT_UPLOAD_HEADERS = {"Content-Type": "application/octet-stream"}
 DEFAULT_DOWNLOAD_HEADERS = {"Accept": "application/octet-stream"}
+DEFAULT_DATA = {"localeName": "en_US"}
 
 
 class AuthType(enum.Enum):
     BASIC = 1
     CERT = 2
-
-
-def get_generic_data() -> dict:
-    return {"localeName": "en_US"}
 
 
 def get_generic_session(retry_count: int = 3) -> Session:

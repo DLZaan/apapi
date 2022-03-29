@@ -56,7 +56,7 @@ class Connection:
 
     def authenticate(self) -> None:
         """Acquire Anaplan Authentication Service Token"""
-        self.session.headers = utils.DEFAULT_HEADERS
+        self.session.headers = utils.DEFAULT_HEADERS.copy()
         if self._auth_type == utils.AuthType.BASIC:
             auth_string = str(
                 base64.b64encode(self._credentials.encode("utf-8")).decode("utf-8")
@@ -95,13 +95,11 @@ class Connection:
         self.session.close()
 
     def request(
-        self, method: str, url: str, params: dict = None, data: bytes = None
+        self, method: str, url: str, params: dict = None, data=None
     ) -> Response:
-        response = self.session.request(
-            method, url, params, json.dumps(data), timeout=self.timeout
-        )
+        response = self.session.request(method, url, params, data, timeout=self.timeout)
         if not response.ok:
-            raise Exception(f"Unable to reach {url}: {response.text}")
+            raise Exception(f"Unable to reach {url}:{response.text}")
         return response
 
     def get_users(self) -> Response:
@@ -146,6 +144,16 @@ class Connection:
             "GET",
             f"{self._api_main_url}/models/{model_id}",
             {"modelDetails": self.details if details is None else details},
+        )
+
+    def get_versions(self, model_id: str):
+        return self.request("GET", f"{self._api_main_url}/models/{model_id}/versions")
+
+    def set_version_switchover(self, model_id: str, version_id: str, data: str):
+        return self.request(
+            "PUT",
+            f"{self._api_main_url}/models/{model_id}/versions/{version_id}/switchover",
+            data=json.dumps({"date": data}),
         )
 
     def get_lists(self, model_id: str) -> Response:
@@ -218,7 +226,7 @@ class Connection:
         return self.session.request(
             "PUT",
             f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/files/{file_id}",
-            headers=utils.DEFAULT_UPLOAD_HEADERS,
+            headers=utils.DEFAULT_UPLOAD_HEADERS.copy(),
             data=data,
             timeout=self.timeout,
         )
@@ -233,7 +241,7 @@ class Connection:
             chunk = self.session.request(
                 "GET",
                 f"{url}/{chunk_id['id']}",
-                headers=utils.DEFAULT_DOWNLOAD_HEADERS,
+                headers=utils.DEFAULT_DOWNLOAD_HEADERS.copy(),
                 timeout=self.timeout,
             )
             if not chunk.ok:
@@ -250,11 +258,11 @@ class Connection:
         data=None,
     ) -> Response:
         if data is None:
-            data = utils.get_generic_data()
+            data = utils.DEFAULT_DATA.copy()
         return self.request(
             "POST",
             f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/{action_type}/{action_id}/tasks",
-            data=data,
+            data=json.dumps(data),
         )
 
     def run_import(

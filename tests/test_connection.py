@@ -24,6 +24,9 @@ assert t_conn.get_ws_models(t["workspace_id"]).ok
 assert t_conn.get_models().ok
 assert t_conn.get_model(t["model_id"]).ok
 
+assert t_conn.get_versions(t["model_id"]).ok
+assert t_conn.set_version_switchover(t["model_id"], "107000000002", "").ok
+
 lists = t_conn.get_lists(t["model_id"])
 assert lists.ok
 # requires at least one list (should always be met, Organization is always present)
@@ -55,7 +58,7 @@ assert t_conn.run_import(t["workspace_id"], t["model_id"], t["import_id"]).ok
 assert t_conn.run_action(t["workspace_id"], t["model_id"], t["action_id"]).ok
 # requires: process with import (column1: Users, column2: Date, Versions: ask each time)
 i_data = f"{t['email']},2022-04-01".encode()
-mapping = apapi.utils.get_generic_data()
+mapping = apapi.utils.DEFAULT_DATA.copy()
 mapping["mappingParameters"] = [{"entityType": "Version", "entityName": "Actual"}]
 assert t_conn.upload_data(t["workspace_id"], t["model_id"], t["file_id_2"], i_data).ok
 assert t_conn.run_process(t["workspace_id"], t["model_id"], t["process_id"], mapping).ok
