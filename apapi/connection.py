@@ -146,6 +146,30 @@ class Connection:
             {"modelDetails": self.details if details is None else details},
         )
 
+    def get_fiscal_year(self, model_id: str):
+        return self.request(
+            "GET", f"{self._api_main_url}/models/{model_id}/modelCalendar"
+        )
+
+    def set_fiscal_year(self, model_id: str, data: str):
+        return self.request(
+            "PUT",
+            f"{self._api_main_url}/models/{model_id}/modelCalendar/fiscalYear",
+            data=json.dumps({"year": data}),
+        )
+
+    def get_current_period(self, model_id: str):
+        return self.request(
+            "GET", f"{self._api_main_url}/models/{model_id}/currentPeriod"
+        )
+
+    def set_current_period(self, model_id: str, data: str):
+        return self.request(
+            "PUT",
+            f"{self._api_main_url}/models/{model_id}/currentPeriod",
+            data=json.dumps({"date": data}),
+        )
+
     def get_versions(self, model_id: str):
         return self.request("GET", f"{self._api_main_url}/models/{model_id}/versions")
 

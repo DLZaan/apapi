@@ -24,7 +24,13 @@ assert t_conn.get_ws_models(t["workspace_id"]).ok
 assert t_conn.get_models().ok
 assert t_conn.get_model(t["model_id"]).ok
 
+assert t_conn.get_fiscal_year(t["model_id"]).ok
+assert t_conn.set_fiscal_year(t["model_id"], "FY22").ok
+assert t_conn.get_current_period(t["model_id"]).ok
+assert t_conn.set_current_period(t["model_id"], "2022-04-01").ok
+
 assert t_conn.get_versions(t["model_id"]).ok
+# requires default Forecast version
 assert t_conn.set_version_switchover(t["model_id"], "107000000002", "").ok
 
 lists = t_conn.get_lists(t["model_id"])
