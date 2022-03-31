@@ -39,6 +39,7 @@ assert lists.ok
 list_id = lists.json()["lists"][0]["id"]
 assert t_conn.get_list(t["model_id"], list_id).ok
 assert t_conn.get_list_items(t["model_id"], list_id).ok
+assert t_conn.get_list_items(t["model_id"], list_id, accept=apapi.utils.TEXT_CSV).ok
 
 modules = t_conn.get_modules(t["model_id"])
 assert modules.ok

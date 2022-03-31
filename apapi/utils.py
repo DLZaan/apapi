@@ -10,13 +10,20 @@ import enum
 from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
+from apapi import __title__, __version__
 
 AUTH_URL = "https://auth.anaplan.com"
 API_URL = "https://api.anaplan.com"
 
-DEFAULT_HEADERS = {"Content-Type": "application/json", "Accept": "application/json"}
-DEFAULT_UPLOAD_HEADERS = {"Content-Type": "application/octet-stream"}
-DEFAULT_DOWNLOAD_HEADERS = {"Accept": "application/octet-stream"}
+USER_AGENT = f"{__title__}/{__version__}"
+APP_JSON = "application/json"
+APP_8STREAM = "application/octet-stream"
+TEXT_CSV = "text/csv"
+DEFAULT_HEADERS = {
+    "Content-Type": APP_JSON,
+    "Accept": APP_JSON,
+    "User-Agent": USER_AGENT,
+}
 DEFAULT_DATA = {"localeName": "en_US"}
 
 

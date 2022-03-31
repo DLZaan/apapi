@@ -95,9 +95,16 @@ class Connection:
         self.session.close()
 
     def request(
-        self, method: str, url: str, params: dict = None, data=None
+        self, method: str, url: str, params: dict = None, data=None, headers=None
     ) -> Response:
-        response = self.session.request(method, url, params, data, timeout=self.timeout)
+        if headers:
+            response = self.session.request(
+                method, url, params, data, timeout=self.timeout, headers=headers
+            )
+        else:
+            response = self.session.request(
+                method, url, params, data, timeout=self.timeout
+            )
         if not response.ok:
             raise Exception(f"Unable to reach {url}:{response.text}")
         return response
@@ -189,12 +196,17 @@ class Connection:
         )
 
     def get_list_items(
-        self, model_id: str, list_id: str, details: bool = None
+        self, model_id: str, list_id: str, details: bool = None, accept: str = None
     ) -> Response:
+        headers = None
+        if format:
+            headers = self.session.headers.copy()
+            headers["Accept"] = accept
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/lists/{list_id}/items",
             {"includeAll": self.details if details is None else details},
+            headers=headers,
         )
 
     def get_modules(self, model_id: str) -> Response:
@@ -247,12 +259,13 @@ class Connection:
     def upload_data(
         self, workspace_id: str, model_id: str, file_id: str, data: bytes
     ) -> Response:
-        return self.session.request(
+        headers = self.session.headers.copy()
+        headers["Content-Type"] = utils.APP_8STREAM
+        return self.request(
             "PUT",
             f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/files/{file_id}",
-            headers=utils.DEFAULT_UPLOAD_HEADERS.copy(),
             data=data,
-            timeout=self.timeout,
+            headers=headers,
         )
 
     def download_data(self, workspace_id: str, model_id: str, file_id: str) -> bytes:
@@ -261,13 +274,10 @@ class Connection:
         if not (response.ok and response.json()["meta"]["paging"]["currentPageSize"]):
             raise Exception(f"Unable to get chunks count for a file {file_id}")
         data = b""
+        headers = self.session.headers.copy()
+        headers["Accept"] = utils.APP_8STREAM
         for chunk_id in response.json()["chunks"]:
-            chunk = self.session.request(
-                "GET",
-                f"{url}/{chunk_id['id']}",
-                headers=utils.DEFAULT_DOWNLOAD_HEADERS.copy(),
-                timeout=self.timeout,
-            )
+            chunk = self.request("GET", f"{url}/{chunk_id['id']}", headers=headers)
             if not chunk.ok:
                 raise Exception(f"Unable to get chunk {chunk_id} for file {file_id}")
             data += chunk.content
