@@ -1,0 +1,177 @@
+# -*- coding: utf-8 -*-
+"""
+apapi._transactional
+~~~~~~~~~~~~~~~~
+Functions for Connection class responsible for Transactional API endpoints
+"""
+
+import json
+from requests import Response
+
+
+def get_users(self) -> Response:
+    return self.request("GET", f"{self._api_main_url}/users")
+
+
+def get_user(self, user_id: str) -> Response:
+    return self.request("GET", f"{self._api_main_url}/users/{user_id}")
+
+
+def get_me(self) -> Response:
+    return self.request("GET", f"{self._api_main_url}/users/me")
+
+
+def get_workspaces(self, details: bool = None) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/workspaces",
+        {"tenantDetails": self.details if details is None else details},
+    )
+
+
+def get_workspace(self, workspace_id: str, details: bool = True) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/workspaces/{workspace_id}",
+        {"tenantDetails": details},
+    )
+
+
+def get_models(self, details: bool = None) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models",
+        {"modelDetails": self.details if details is None else details},
+    )
+
+
+def get_ws_models(self, workspace_id: str, details: bool = None) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/workspaces/{workspace_id}/models",
+        {"modelDetails": self.details if details is None else details},
+    )
+
+
+def get_model(self, model_id: str, details: bool = None) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}",
+        {"modelDetails": self.details if details is None else details},
+    )
+
+
+def get_fiscal_year(self, model_id: str):
+    return self.request("GET", f"{self._api_main_url}/models/{model_id}/modelCalendar")
+
+
+def set_fiscal_year(self, model_id: str, data: str):
+    return self.request(
+        "PUT",
+        f"{self._api_main_url}/models/{model_id}/modelCalendar/fiscalYear",
+        data=json.dumps({"year": data}),
+    )
+
+
+def get_current_period(self, model_id: str):
+    return self.request("GET", f"{self._api_main_url}/models/{model_id}/currentPeriod")
+
+
+def set_current_period(self, model_id: str, data: str):
+    return self.request(
+        "PUT",
+        f"{self._api_main_url}/models/{model_id}/currentPeriod",
+        data=json.dumps({"date": data}),
+    )
+
+
+def get_versions(self, model_id: str):
+    return self.request("GET", f"{self._api_main_url}/models/{model_id}/versions")
+
+
+def set_version_switchover(self, model_id: str, version_id: str, data: str):
+    return self.request(
+        "PUT",
+        f"{self._api_main_url}/models/{model_id}/versions/{version_id}/switchover",
+        data=json.dumps({"date": data}),
+    )
+
+
+def get_lists(self, model_id: str) -> Response:
+    return self.request("GET", f"{self._api_main_url}/models/{model_id}/lists")
+
+
+def get_list(self, model_id: str, list_id: str) -> Response:
+    return self.request(
+        "GET", f"{self._api_main_url}/models/{model_id}/lists/{list_id}"
+    )
+
+
+def get_list_items(
+    self, model_id: str, list_id: str, details: bool = None, accept: str = None
+) -> Response:
+    headers = None
+    if format:
+        headers = self.session.headers.copy()
+        headers["Accept"] = accept
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/lists/{list_id}/items",
+        {"includeAll": self.details if details is None else details},
+        headers=headers,
+    )
+
+
+def get_modules(self, model_id: str) -> Response:
+    return self.request("GET", f"{self._api_main_url}/models/{model_id}/modules")
+
+
+def get_views(self, model_id: str, details: bool = None) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/views",
+        {"includesubsidiaryviews": self.details if details is None else details},
+    )
+
+
+def get_module_views(
+    self, model_id: str, module_id: str, details: bool = None
+) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/modules/{module_id}/views",
+        {"includesubsidiaryviews": self.details if details is None else details},
+    )
+
+
+def get_view(self, model_id: str, view_id: str) -> Response:
+    return self.request(
+        "GET", f"{self._api_main_url}/models/{model_id}/views/{view_id}"
+    )
+
+
+def _get_actions(self, workspace_id: str, model_id: str, action_type: str) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/{action_type}",
+    )
+
+
+def get_imports(self, workspace_id: str, model_id: str) -> Response:
+    return self._get_actions(workspace_id, model_id, "imports")
+
+
+def get_exports(self, workspace_id: str, model_id: str) -> Response:
+    return self._get_actions(workspace_id, model_id, "exports")
+
+
+def get_actions(self, workspace_id: str, model_id: str) -> Response:
+    return self._get_actions(workspace_id, model_id, "actions")
+
+
+def get_processes(self, workspace_id: str, model_id: str) -> Response:
+    return self._get_actions(workspace_id, model_id, "processes")
+
+
+def get_files(self, workspace_id: str, model_id: str) -> Response:
+    return self._get_actions(workspace_id, model_id, "files")

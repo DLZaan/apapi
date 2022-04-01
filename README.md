@@ -27,7 +27,8 @@ APAPI supports Python 3.9+.
 
 ## More Info
 - [Official documentation of Anaplan Integration API V2](https://anaplanbulkapi20.docs.apiary.io)
-- [Official documentation of Anaplan Connect V3](https://anaplanenablement.s3.amazonaws.com/Community/Anapedia/Anaplan_Connect_User_Guide_v3.0.0.pdf)
+- [Official documentation of Anaplan Connect V3 (Java)](https://anaplanenablement.s3.amazonaws.com/Community/Anapedia/Anaplan_Connect_User_Guide_v3.0.0.pdf)
+- [Official Anaplan Connect repository](https://github.com/anaplaninc/anaplan-java-client)
 
 ## How to Contribute
 

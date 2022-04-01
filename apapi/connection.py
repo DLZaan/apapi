@@ -6,25 +6,64 @@ This module provides a Connection object to use for calling API endpoints
 """
 
 import base64
-import json
 import threading
 from requests import Response, Session
 import time
 
-from apapi import utils
-from apapi.authentication import AnaplanAuth
+from .authentication import AnaplanAuth
+from .utils import AuthType, AUTH_URL, API_URL, DEFAULT_HEADERS, get_generic_session
 
 
 class Connection:
     """An Anaplan connection session. Provides authentication and basic requesting."""
 
+    from apapi._bulk import (
+        _run_action,
+        upload_data,
+        download_data,
+        run_import,
+        run_export,
+        run_action,
+        run_process,
+    )
+
+    from apapi._transactional import (
+        get_users,
+        get_user,
+        get_me,
+        get_workspaces,
+        get_workspace,
+        get_models,
+        get_ws_models,
+        get_model,
+        get_fiscal_year,
+        set_fiscal_year,
+        get_current_period,
+        set_current_period,
+        get_versions,
+        set_version_switchover,
+        get_lists,
+        get_list,
+        get_list_items,
+        get_modules,
+        get_views,
+        get_module_views,
+        get_view,
+        _get_actions,
+        get_imports,
+        get_exports,
+        get_actions,
+        get_processes,
+        get_files,
+    )
+
     def __init__(
         self,
         credentials: str,
-        auth_type: utils.AuthType = utils.AuthType.BASIC,
-        session: Session = utils.get_generic_session(),
-        auth_url: str = utils.AUTH_URL,
-        api_url: str = utils.API_URL,
+        auth_type: AuthType = AuthType.BASIC,
+        session: Session = get_generic_session(),
+        auth_url: str = AUTH_URL,
+        api_url: str = API_URL,
     ):
 
         self._credentials = credentials
@@ -56,8 +95,8 @@ class Connection:
 
     def authenticate(self) -> None:
         """Acquire Anaplan Authentication Service Token"""
-        self.session.headers = utils.DEFAULT_HEADERS.copy()
-        if self._auth_type == utils.AuthType.BASIC:
+        self.session.headers = DEFAULT_HEADERS.copy()
+        if self._auth_type == AuthType.BASIC:
             auth_string = str(
                 base64.b64encode(self._credentials.encode("utf-8")).decode("utf-8")
             )
@@ -67,7 +106,7 @@ class Connection:
             )
             if not response.ok:
                 raise Exception(f"Unable to authenticate: {response.text}")
-        elif self._auth_type == utils.AuthType.CERT:
+        elif self._auth_type == AuthType.CERT:
             raise NotImplementedError(
                 "Certificate authentication has not been implemented yet"
             )
@@ -108,209 +147,3 @@ class Connection:
         if not response.ok:
             raise Exception(f"Unable to reach {url}:{response.text}")
         return response
-
-    def get_users(self) -> Response:
-        return self.request("GET", f"{self._api_main_url}/users")
-
-    def get_user(self, user_id: str) -> Response:
-        return self.request("GET", f"{self._api_main_url}/users/{user_id}")
-
-    def get_me(self) -> Response:
-        return self.request("GET", f"{self._api_main_url}/users/me")
-
-    def get_workspaces(self, details: bool = None) -> Response:
-        return self.request(
-            "GET",
-            f"{self._api_main_url}/workspaces",
-            {"tenantDetails": self.details if details is None else details},
-        )
-
-    def get_workspace(self, workspace_id: str, details: bool = True) -> Response:
-        return self.request(
-            "GET",
-            f"{self._api_main_url}/workspaces/{workspace_id}",
-            {"tenantDetails": details},
-        )
-
-    def get_models(self, details: bool = None) -> Response:
-        return self.request(
-            "GET",
-            f"{self._api_main_url}/models",
-            {"modelDetails": self.details if details is None else details},
-        )
-
-    def get_ws_models(self, workspace_id: str, details: bool = None) -> Response:
-        return self.request(
-            "GET",
-            f"{self._api_main_url}/workspaces/{workspace_id}/models",
-            {"modelDetails": self.details if details is None else details},
-        )
-
-    def get_model(self, model_id: str, details: bool = None) -> Response:
-        return self.request(
-            "GET",
-            f"{self._api_main_url}/models/{model_id}",
-            {"modelDetails": self.details if details is None else details},
-        )
-
-    def get_fiscal_year(self, model_id: str):
-        return self.request(
-            "GET", f"{self._api_main_url}/models/{model_id}/modelCalendar"
-        )
-
-    def set_fiscal_year(self, model_id: str, data: str):
-        return self.request(
-            "PUT",
-            f"{self._api_main_url}/models/{model_id}/modelCalendar/fiscalYear",
-            data=json.dumps({"year": data}),
-        )
-
-    def get_current_period(self, model_id: str):
-        return self.request(
-            "GET", f"{self._api_main_url}/models/{model_id}/currentPeriod"
-        )
-
-    def set_current_period(self, model_id: str, data: str):
-        return self.request(
-            "PUT",
-            f"{self._api_main_url}/models/{model_id}/currentPeriod",
-            data=json.dumps({"date": data}),
-        )
-
-    def get_versions(self, model_id: str):
-        return self.request("GET", f"{self._api_main_url}/models/{model_id}/versions")
-
-    def set_version_switchover(self, model_id: str, version_id: str, data: str):
-        return self.request(
-            "PUT",
-            f"{self._api_main_url}/models/{model_id}/versions/{version_id}/switchover",
-            data=json.dumps({"date": data}),
-        )
-
-    def get_lists(self, model_id: str) -> Response:
-        return self.request("GET", f"{self._api_main_url}/models/{model_id}/lists")
-
-    def get_list(self, model_id: str, list_id: str) -> Response:
-        return self.request(
-            "GET", f"{self._api_main_url}/models/{model_id}/lists/{list_id}"
-        )
-
-    def get_list_items(
-        self, model_id: str, list_id: str, details: bool = None, accept: str = None
-    ) -> Response:
-        headers = None
-        if format:
-            headers = self.session.headers.copy()
-            headers["Accept"] = accept
-        return self.request(
-            "GET",
-            f"{self._api_main_url}/models/{model_id}/lists/{list_id}/items",
-            {"includeAll": self.details if details is None else details},
-            headers=headers,
-        )
-
-    def get_modules(self, model_id: str) -> Response:
-        return self.request("GET", f"{self._api_main_url}/models/{model_id}/modules")
-
-    def get_views(self, model_id: str, details: bool = None) -> Response:
-        return self.request(
-            "GET",
-            f"{self._api_main_url}/models/{model_id}/views",
-            {"includesubsidiaryviews": self.details if details is None else details},
-        )
-
-    def get_module_views(
-        self, model_id: str, module_id: str, details: bool = None
-    ) -> Response:
-        return self.request(
-            "GET",
-            f"{self._api_main_url}/models/{model_id}/modules/{module_id}/views",
-            {"includesubsidiaryviews": self.details if details is None else details},
-        )
-
-    def get_view(self, model_id: str, view_id: str) -> Response:
-        return self.request(
-            "GET", f"{self._api_main_url}/models/{model_id}/views/{view_id}"
-        )
-
-    def _get_actions(
-        self, workspace_id: str, model_id: str, action_type: str
-    ) -> Response:
-        return self.request(
-            "GET",
-            f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/{action_type}",
-        )
-
-    def get_imports(self, workspace_id: str, model_id: str) -> Response:
-        return self._get_actions(workspace_id, model_id, "imports")
-
-    def get_exports(self, workspace_id: str, model_id: str) -> Response:
-        return self._get_actions(workspace_id, model_id, "exports")
-
-    def get_actions(self, workspace_id: str, model_id: str) -> Response:
-        return self._get_actions(workspace_id, model_id, "actions")
-
-    def get_processes(self, workspace_id: str, model_id: str) -> Response:
-        return self._get_actions(workspace_id, model_id, "processes")
-
-    def get_files(self, workspace_id: str, model_id: str) -> Response:
-        return self._get_actions(workspace_id, model_id, "files")
-
-    def upload_data(
-        self, workspace_id: str, model_id: str, file_id: str, data: bytes
-    ) -> Response:
-        headers = self.session.headers.copy()
-        headers["Content-Type"] = utils.APP_8STREAM
-        return self.request(
-            "PUT",
-            f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/files/{file_id}",
-            data=data,
-            headers=headers,
-        )
-
-    def download_data(self, workspace_id: str, model_id: str, file_id: str) -> bytes:
-        url = f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/files/{file_id}/chunks"
-        response = self.request("GET", url)
-        if not (response.ok and response.json()["meta"]["paging"]["currentPageSize"]):
-            raise Exception(f"Unable to get chunks count for a file {file_id}")
-        data = b""
-        headers = self.session.headers.copy()
-        headers["Accept"] = utils.APP_8STREAM
-        for chunk_id in response.json()["chunks"]:
-            chunk = self.request("GET", f"{url}/{chunk_id['id']}", headers=headers)
-            if not chunk.ok:
-                raise Exception(f"Unable to get chunk {chunk_id} for file {file_id}")
-            data += chunk.content
-        return data
-
-    def _run_action(
-        self,
-        workspace_id: str,
-        model_id: str,
-        action_id: str,
-        action_type: str,
-        data=None,
-    ) -> Response:
-        if data is None:
-            data = utils.DEFAULT_DATA.copy()
-        return self.request(
-            "POST",
-            f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/{action_type}/{action_id}/tasks",
-            data=json.dumps(data),
-        )
-
-    def run_import(
-        self, workspace_id: str, model_id: str, action_id: str, data=None
-    ) -> Response:
-        return self._run_action(workspace_id, model_id, action_id, "imports", data)
-
-    def run_export(self, workspace_id: str, model_id: str, action_id: str) -> Response:
-        return self._run_action(workspace_id, model_id, action_id, "exports")
-
-    def run_action(self, workspace_id: str, model_id: str, action_id: str) -> Response:
-        return self._run_action(workspace_id, model_id, action_id, "actions")
-
-    def run_process(
-        self, workspace_id: str, model_id: str, action_id: str, data=None
-    ) -> Response:
-        return self._run_action(workspace_id, model_id, action_id, "processes", data)
