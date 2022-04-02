@@ -33,13 +33,41 @@ assert t_conn.get_versions(t["model_id"]).ok
 # requires default Forecast version
 assert t_conn.set_version_switchover(t["model_id"], "107000000002", "").ok
 
-lists = t_conn.get_lists(t["model_id"])
-assert lists.ok
-# requires at least one list (should always be met, Organization is always present)
-list_id = lists.json()["lists"][0]["id"]
-assert t_conn.get_list(t["model_id"], list_id).ok
-assert t_conn.get_list_items(t["model_id"], list_id).ok
-assert t_conn.get_list_items(t["model_id"], list_id, accept=apapi.utils.TEXT_CSV).ok
+assert t_conn.get_lists(t["model_id"]).ok
+assert t_conn.get_list(t["model_id"], t["list_id"]).ok
+assert t_conn.get_list_items(t["model_id"], t["list_id"]).ok
+assert t_conn.get_list_items(t["model_id"], t["list_id"], True, apapi.utils.TEXT_CSV).ok
+
+new_items = [
+    {
+        "code": "apapi_test_code",
+        "properties": {"p-text": "apapi test string"},
+        "subsets": {"10": True},
+    }
+]
+add_response = t_conn.add_list_items(t["model_id"], t["list_id"], new_items)
+assert add_response.ok
+assert "failures" not in add_response.json() or not add_response.json()["failures"]
+new_items[0]["subsets"]["10"] = False
+del new_items[0]["properties"]
+update_response = t_conn.update_list_items(t["model_id"], t["list_id"], new_items)
+assert update_response.ok
+assert (
+    "failures" not in update_response.json() or not update_response.json()["failures"]
+)
+del new_items[0]["subsets"]
+delete_response = t_conn.delete_list_items(t["model_id"], t["list_id"], new_items)
+assert delete_response.ok
+assert (
+    "result" not in delete_response.json()
+    or "failures" not in delete_response.json()["result"]
+    or not delete_response.json()["result"]["failures"]
+)
+try:
+    reset_response = t_conn.reset_list_index(t["model_id"], t["list_id"])
+    assert reset_response.ok
+except Exception as error:
+    assert json.loads(error.args[2])["status"]["code"] == 400
 
 modules = t_conn.get_modules(t["model_id"])
 assert modules.ok

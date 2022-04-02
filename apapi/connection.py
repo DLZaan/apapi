@@ -45,6 +45,10 @@ class Connection:
         get_lists,
         get_list,
         get_list_items,
+        add_list_items,
+        update_list_items,
+        delete_list_items,
+        reset_list_index,
         get_modules,
         get_views,
         get_module_views,
@@ -123,7 +127,7 @@ class Connection:
                     f"{self._auth_url}/token/refresh", timeout=self.timeout
                 )
                 if not response.ok:
-                    raise Exception(f"Unable to refresh the token: {response.text}")
+                    raise Exception("Unable to refresh the token", response.text)
                 self._timer.cancel()
                 self._handle_token(response.json()["tokenInfo"])
 
@@ -145,5 +149,5 @@ class Connection:
                 method, url, params, data, timeout=self.timeout
             )
         if not response.ok:
-            raise Exception(f"Unable to reach {url}:{response.text}")
+            raise Exception("Request failed", url, response.text)
         return response

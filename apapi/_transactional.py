@@ -110,15 +110,48 @@ def get_list(self, model_id: str, list_id: str) -> Response:
 def get_list_items(
     self, model_id: str, list_id: str, details: bool = None, accept: str = None
 ) -> Response:
-    headers = None
     if format:
         headers = self.session.headers.copy()
         headers["Accept"] = accept
+    else:
+        headers = None
     return self.request(
         "GET",
         f"{self._api_main_url}/models/{model_id}/lists/{list_id}/items",
         {"includeAll": self.details if details is None else details},
         headers=headers,
+    )
+
+
+def add_list_items(self, model_id: str, list_id: str, data: list[dict]) -> Response:
+    return self.request(
+        "POST",
+        f"{self._api_main_url}/models/{model_id}/lists/{list_id}/items",
+        {"action": "add"},
+        json.dumps({"items": data}),
+    )
+
+
+def update_list_items(self, model_id: str, list_id: str, data: list[dict]) -> Response:
+    return self.request(
+        "PUT",
+        f"{self._api_main_url}/models/{model_id}/lists/{list_id}/items",
+        data=json.dumps({"items": data}),
+    )
+
+
+def delete_list_items(self, model_id: str, list_id: str, data: list[dict]) -> Response:
+    return self.request(
+        "POST",
+        f"{self._api_main_url}/models/{model_id}/lists/{list_id}/items",
+        {"action": "delete"},
+        json.dumps({"items": data}),
+    )
+
+
+def reset_list_index(self, model_id: str, list_id: str) -> Response:
+    return self.request(
+        "POST", f"{self._api_main_url}/models/{model_id}/lists/{list_id}/resetIndex"
     )
 
 
