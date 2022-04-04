@@ -183,6 +183,31 @@ def get_view(self, model_id: str, view_id: str) -> Response:
     )
 
 
+def get_lineitems(self, model_id: str, details: bool = None) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/lineItems",
+        {"includeAll": self.details if details is None else details},
+    )
+
+
+def get_module_lineitems(
+    self, model_id: str, module_id: str, details: bool = None
+) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/modules/{module_id}/lineItems",
+        {"includeAll": self.details if details is None else details},
+    )
+
+
+def get_lineitem_dimensions(self, model_id: str, lineitem_id: str) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/lineItems/{lineitem_id}/dimensions",
+    )
+
+
 def _get_actions(self, workspace_id: str, model_id: str, action_type: str) -> Response:
     return self.request(
         "GET",

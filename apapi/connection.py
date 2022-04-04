@@ -17,7 +17,7 @@ from .utils import AuthType, AUTH_URL, API_URL, DEFAULT_HEADERS, get_generic_ses
 class Connection:
     """An Anaplan connection session. Provides authentication and basic requesting."""
 
-    from apapi._bulk import (
+    from ._bulk import (
         _run_action,
         upload_data,
         download_data,
@@ -27,7 +27,7 @@ class Connection:
         run_process,
     )
 
-    from apapi._transactional import (
+    from ._transactional import (
         get_users,
         get_user,
         get_me,
@@ -53,6 +53,9 @@ class Connection:
         get_views,
         get_module_views,
         get_view,
+        get_lineitems,
+        get_module_lineitems,
+        get_lineitem_dimensions,
         _get_actions,
         get_imports,
         get_exports,
@@ -109,7 +112,7 @@ class Connection:
                 f"{self._auth_url}/token/authenticate", timeout=self.timeout
             )
             if not response.ok:
-                raise Exception(f"Unable to authenticate: {response.text}")
+                raise Exception("Unable to authenticate", response.text)
         elif self._auth_type == AuthType.CERT:
             raise NotImplementedError(
                 "Certificate authentication has not been implemented yet"

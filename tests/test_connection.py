@@ -76,6 +76,13 @@ module_id = modules.json()["modules"][0]["id"]
 assert t_conn.get_module_views(t["model_id"], module_id).ok
 assert t_conn.get_views(t["model_id"]).ok
 assert t_conn.get_view(t["model_id"], module_id).ok
+lineitems = t_conn.get_lineitems(t["model_id"])
+assert lineitems.ok
+assert t_conn.get_module_lineitems(t["model_id"], module_id).ok
+# requires at least one line item
+assert t_conn.get_lineitem_dimensions(
+    t["model_id"], lineitems.json()["items"][0]["id"]
+).ok
 
 assert t_conn.get_exports(t["workspace_id"], t["model_id"]).ok
 assert t_conn.get_imports(t["workspace_id"], t["model_id"]).ok
