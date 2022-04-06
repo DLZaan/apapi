@@ -52,9 +52,7 @@ new_items[0]["subsets"]["10"] = False
 del new_items[0]["properties"]
 update_response = t_conn.update_list_items(t["model_id"], t["list_id"], new_items)
 assert update_response.ok
-assert (
-    "failures" not in update_response.json() or not update_response.json()["failures"]
-)
+assert ("failures" not in update_response.json() or not update_response.json()["failures"])
 del new_items[0]["subsets"]
 delete_response = t_conn.delete_list_items(t["model_id"], t["list_id"], new_items)
 assert delete_response.ok
@@ -80,9 +78,16 @@ lineitems = t_conn.get_lineitems(t["model_id"])
 assert lineitems.ok
 assert t_conn.get_module_lineitems(t["model_id"], module_id).ok
 # requires at least one line item
-assert t_conn.get_lineitem_dimensions(
-    t["model_id"], lineitems.json()["items"][0]["id"]
-).ok
+lineitem_id = lineitems.json()["items"][0]["id"]
+dimensions = t_conn.get_lineitem_dimensions(t["model_id"], lineitem_id)
+assert dimensions.ok
+dimension_id = dimensions.json()["dimensions"][0]["id"]
+assert t_conn.get_dimension_items(t["model_id"], t["list_id"]).ok
+dim_items = t_conn.get_view_dimension_items(t["model_id"], lineitem_id, dimension_id)
+assert dim_items.ok
+dim_names = {"names": [item["name"] for item in dim_items.json()["items"]]}
+assert t_conn.check_dimension_items_id(t["model_id"], dimension_id, dim_names).ok
+
 
 assert t_conn.get_exports(t["workspace_id"], t["model_id"]).ok
 assert t_conn.get_imports(t["workspace_id"], t["model_id"]).ok

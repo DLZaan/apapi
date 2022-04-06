@@ -155,6 +155,32 @@ def reset_list_index(self, model_id: str, list_id: str) -> Response:
     )
 
 
+def check_dimension_items_id(
+    self, model_id: str, dimension_id: str, data: dict
+) -> Response:
+    return self.request(
+        "POST",
+        f"{self._api_main_url}/models/{model_id}/dimensions/{dimension_id}/items",
+        data=json.dumps(data),
+    )
+
+
+def get_dimension_items(self, model_id: str, dimension_id: str) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/dimensions/{dimension_id}/items",
+    )
+
+
+def get_view_dimension_items(
+    self, model_id: str, view_id: str, dimension_id: str
+) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/views/{view_id}/dimensions/{dimension_id}/items",
+    )
+
+
 def get_modules(self, model_id: str) -> Response:
     return self.request("GET", f"{self._api_main_url}/models/{model_id}/modules")
 

@@ -19,7 +19,7 @@ Check [tests/test_connection.py](tests/test_connection.py) for more examples and
 
 ## Installing Anaplan Python API and Supported Versions
 
-APAPI is available on PyPI:
+APAPI is available on [PyPI](https://pypi.org/project/apapi/):
 ```console
 $ python -m pip install apapi
 ```
@@ -34,3 +34,7 @@ APAPI supports Python 3.9+.
 
 Contributions are welcome, even if you can't code it - in such case, please submit an issue if you need any additional feature (preferably in the form of User Story, like _"As {who} I need {what} because {why}"_).
 If you encounter any bugs, please report the problem with a description and error log.
+
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/apapi)
+![PyPI - License](https://img.shields.io/pypi/l/apapi)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
