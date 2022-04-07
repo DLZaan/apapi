@@ -29,11 +29,11 @@ def get_workspaces(self, details: bool = None) -> Response:
     )
 
 
-def get_workspace(self, workspace_id: str, details: bool = True) -> Response:
+def get_workspace(self, workspace_id: str, details: bool = None) -> Response:
     return self.request(
         "GET",
         f"{self._api_main_url}/workspaces/{workspace_id}",
-        {"tenantDetails": details},
+        {"tenantDetails": self.details if details is None else details},
     )
 
 
