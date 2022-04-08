@@ -28,20 +28,29 @@ class Connection:
     )
 
     from ._transactional import (
+        # Users
         get_users,
-        get_user,
         get_me,
+        get_user,
+        get_workspace_users,
+        get_workspace_admins,
+        get_model_users,
+        # Workspaces
         get_workspaces,
         get_workspace,
+        # Models
         get_models,
-        get_ws_models,
+        get_workspace_models,
         get_model,
+        # Calendar
         get_fiscal_year,
         set_fiscal_year,
         get_current_period,
         set_current_period,
+        # Versions
         get_versions,
         set_version_switchover,
+        # Lists
         get_lists,
         get_list,
         get_list_items,
@@ -49,16 +58,22 @@ class Connection:
         update_list_items,
         delete_list_items,
         reset_list_index,
-        check_dimension_items_id,
-        get_dimension_items,
-        get_view_dimension_items,
+        # Modules
         get_modules,
+        # Lineitems
+        get_lineitems,
+        get_module_lineitems,
+        # Views
         get_views,
         get_module_views,
         get_view,
-        get_lineitems,
-        get_module_lineitems,
+        # Dimensions
+        get_dimension_items,
         get_lineitem_dimensions,
+        get_lineitem_dimension_items,
+        get_view_dimension_items,
+        check_dimension_items_id,
+        # Actions
         _get_actions,
         get_imports,
         get_exports,

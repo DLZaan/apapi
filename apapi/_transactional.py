@@ -9,18 +9,39 @@ import json
 from requests import Response
 
 
+# Users
 def get_users(self) -> Response:
     return self.request("GET", f"{self._api_main_url}/users")
-
-
-def get_user(self, user_id: str) -> Response:
-    return self.request("GET", f"{self._api_main_url}/users/{user_id}")
 
 
 def get_me(self) -> Response:
     return self.request("GET", f"{self._api_main_url}/users/me")
 
 
+def get_user(self, user_id: str) -> Response:
+    return self.request("GET", f"{self._api_main_url}/users/{user_id}")
+
+
+def get_workspace_users(self, workspace_id: str) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/workspaces/{workspace_id}/users",
+    )
+
+
+def get_workspace_admins(self, workspace_id: str) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/workspaces/{workspace_id}/admins",
+        {"limit": 2147483647},  # 2^31-1, max accepted, put here as default is 20
+    )
+
+
+def get_model_users(self, model_id: str) -> Response:
+    return self.request("GET", f"{self._api_main_url}/models/{model_id}/users")
+
+
+# Workspaces
 def get_workspaces(self, details: bool = None) -> Response:
     return self.request(
         "GET",
@@ -37,6 +58,7 @@ def get_workspace(self, workspace_id: str, details: bool = None) -> Response:
     )
 
 
+# Models
 def get_models(self, details: bool = None) -> Response:
     return self.request(
         "GET",
@@ -45,7 +67,7 @@ def get_models(self, details: bool = None) -> Response:
     )
 
 
-def get_ws_models(self, workspace_id: str, details: bool = None) -> Response:
+def get_workspace_models(self, workspace_id: str, details: bool = None) -> Response:
     return self.request(
         "GET",
         f"{self._api_main_url}/workspaces/{workspace_id}/models",
@@ -61,6 +83,7 @@ def get_model(self, model_id: str, details: bool = None) -> Response:
     )
 
 
+# Calendar
 def get_fiscal_year(self, model_id: str):
     return self.request("GET", f"{self._api_main_url}/models/{model_id}/modelCalendar")
 
@@ -85,6 +108,7 @@ def set_current_period(self, model_id: str, data: str):
     )
 
 
+# Versions
 def get_versions(self, model_id: str):
     return self.request("GET", f"{self._api_main_url}/models/{model_id}/versions")
 
@@ -97,6 +121,7 @@ def set_version_switchover(self, model_id: str, version_id: str, data: str):
     )
 
 
+# Lists
 def get_lists(self, model_id: str) -> Response:
     return self.request("GET", f"{self._api_main_url}/models/{model_id}/lists")
 
@@ -155,36 +180,31 @@ def reset_list_index(self, model_id: str, list_id: str) -> Response:
     )
 
 
-def check_dimension_items_id(
-    self, model_id: str, dimension_id: str, data: dict
-) -> Response:
-    return self.request(
-        "POST",
-        f"{self._api_main_url}/models/{model_id}/dimensions/{dimension_id}/items",
-        data=json.dumps(data),
-    )
-
-
-def get_dimension_items(self, model_id: str, dimension_id: str) -> Response:
-    return self.request(
-        "GET",
-        f"{self._api_main_url}/models/{model_id}/dimensions/{dimension_id}/items",
-    )
-
-
-def get_view_dimension_items(
-    self, model_id: str, view_id: str, dimension_id: str
-) -> Response:
-    return self.request(
-        "GET",
-        f"{self._api_main_url}/models/{model_id}/views/{view_id}/dimensions/{dimension_id}/items",
-    )
-
-
+# Modules
 def get_modules(self, model_id: str) -> Response:
     return self.request("GET", f"{self._api_main_url}/models/{model_id}/modules")
 
 
+# Lineitems
+def get_lineitems(self, model_id: str, details: bool = None) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/lineItems",
+        {"includeAll": self.details if details is None else details},
+    )
+
+
+def get_module_lineitems(
+    self, model_id: str, module_id: str, details: bool = None
+) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/modules/{module_id}/lineItems",
+        {"includeAll": self.details if details is None else details},
+    )
+
+
+# Views
 def get_views(self, model_id: str, details: bool = None) -> Response:
     return self.request(
         "GET",
@@ -209,21 +229,11 @@ def get_view(self, model_id: str, view_id: str) -> Response:
     )
 
 
-def get_lineitems(self, model_id: str, details: bool = None) -> Response:
+# Dimensions
+def get_dimension_items(self, model_id: str, dimension_id: str) -> Response:
     return self.request(
         "GET",
-        f"{self._api_main_url}/models/{model_id}/lineItems",
-        {"includeAll": self.details if details is None else details},
-    )
-
-
-def get_module_lineitems(
-    self, model_id: str, module_id: str, details: bool = None
-) -> Response:
-    return self.request(
-        "GET",
-        f"{self._api_main_url}/models/{model_id}/modules/{module_id}/lineItems",
-        {"includeAll": self.details if details is None else details},
+        f"{self._api_main_url}/models/{model_id}/dimensions/{dimension_id}/items",
     )
 
 
@@ -234,6 +244,35 @@ def get_lineitem_dimensions(self, model_id: str, lineitem_id: str) -> Response:
     )
 
 
+def get_lineitem_dimension_items(
+    self, model_id: str, lineitem_id: str, dimension_id: str
+) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/lineItems/{lineitem_id}/dimensions/{dimension_id}/items",
+    )
+
+
+def get_view_dimension_items(
+    self, model_id: str, view_id: str, dimension_id: str
+) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/views/{view_id}/dimensions/{dimension_id}/items",
+    )
+
+
+def check_dimension_items_id(
+    self, model_id: str, dimension_id: str, data: dict
+) -> Response:
+    return self.request(
+        "POST",
+        f"{self._api_main_url}/models/{model_id}/dimensions/{dimension_id}/items",
+        data=json.dumps(data),
+    )
+
+
+# Actions
 def _get_actions(self, workspace_id: str, model_id: str, action_type: str) -> Response:
     return self.request(
         "GET",
