@@ -73,6 +73,8 @@ class Connection:
         get_lineitem_dimension_items,
         get_view_dimension_items,
         check_dimension_items_id,
+        # Cells
+        get_cell_data,
         # Actions
         _get_actions,
         get_imports,
@@ -120,7 +122,6 @@ class Connection:
 
     def authenticate(self) -> None:
         """Acquire Anaplan Authentication Service Token"""
-        self.session.headers = DEFAULT_HEADERS.copy()
         if self._auth_type == AuthType.BASIC:
             auth_string = str(
                 base64.b64encode(self._credentials.encode("utf-8")).decode("utf-8")

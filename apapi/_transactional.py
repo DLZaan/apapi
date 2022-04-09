@@ -7,7 +7,7 @@ Functions for Connection class responsible for Transactional API endpoints
 
 import json
 from requests import Response
-
+from .utils import APP_JSON
 
 # Users
 def get_users(self) -> Response:
@@ -135,7 +135,7 @@ def get_list(self, model_id: str, list_id: str) -> Response:
 def get_list_items(
     self, model_id: str, list_id: str, details: bool = None, accept: str = None
 ) -> Response:
-    if format:
+    if accept:
         headers = self.session.headers.copy()
         headers["Accept"] = accept
     else:
@@ -269,6 +269,24 @@ def check_dimension_items_id(
         "POST",
         f"{self._api_main_url}/models/{model_id}/dimensions/{dimension_id}/items",
         data=json.dumps(data),
+    )
+
+
+# Cells
+def get_cell_data(self, model_id: str, view_id: str, accept: str = None, pages: dict[str] = None) -> Response:
+    headers = self.session.headers.copy()
+    if accept:
+        headers["Accept"] = accept
+    params = {}
+    if pages:
+        params["pages"] = pages
+    if headers["Accept"] == APP_JSON:
+        params["format"] = "v1"
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/views/{view_id}/data",
+        params=params,
+        headers=headers,
     )
 
 

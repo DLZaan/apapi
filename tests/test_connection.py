@@ -77,9 +77,6 @@ t_conn.get_module_lineitems(t["model_id"], module_id)
 t_conn.get_views(t["model_id"])
 t_conn.get_module_views(t["model_id"], module_id)
 view = t_conn.get_view(t["model_id"], module_id).json()
-view_dimension_id = (
-    view.get("columns", []) + view.get("rows", []) + view.get("pages", [])
-)[0]["id"]
 
 # Dimensions
 t_conn.get_dimension_items(t["model_id"], t["list_id"])
@@ -87,9 +84,17 @@ lineitem_dimension_id = t_conn.get_lineitem_dimensions(
     t["model_id"], lineitem_id
 ).json()["dimensions"][0]["id"]
 t_conn.get_lineitem_dimension_items(t["model_id"], lineitem_id, lineitem_dimension_id)
+view_dimension_id = (
+    view.get("columns", []) + view.get("rows", []) + view.get("pages", [])
+)[0]["id"]
 dim_items = t_conn.get_view_dimension_items(t["model_id"], module_id, view_dimension_id)
 dim_names = {"names": [item["name"] for item in dim_items.json()["items"]]}
 t_conn.check_dimension_items_id(t["model_id"], view_dimension_id, dim_names)
+
+# Cells
+t_conn.get_cell_data(t["model_id"], module_id)
+t_conn.get_cell_data(t["model_id"], module_id, apapi.utils.TEXT_CSV)
+t_conn.get_cell_data(t["model_id"], module_id, apapi.utils.TEXT_CSV_ESCAPED)
 
 # Actions
 t_conn.get_exports(t["workspace_id"], t["model_id"])

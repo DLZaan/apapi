@@ -19,6 +19,7 @@ USER_AGENT = f"{__title__}/{__version__}"
 APP_JSON = "application/json"
 APP_8STREAM = "application/octet-stream"
 TEXT_CSV = "text/csv"
+TEXT_CSV_ESCAPED = "text/csv;escaped=true"
 DEFAULT_HEADERS = {
     "Content-Type": APP_JSON,
     "Accept": APP_JSON,
@@ -43,4 +44,5 @@ def get_generic_session(retry_count: int = 3) -> Session:
     session = Session()
     session.mount("http://", adapter)
     session.mount("https://", adapter)
+    session.headers = DEFAULT_HEADERS.copy()
     return session
