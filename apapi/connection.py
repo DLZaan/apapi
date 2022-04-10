@@ -75,6 +75,7 @@ class Connection:
         check_dimension_items_id,
         # Cells
         get_cell_data,
+        post_cell_data,
         # Actions
         _get_actions,
         get_imports,

@@ -273,7 +273,9 @@ def check_dimension_items_id(
 
 
 # Cells
-def get_cell_data(self, model_id: str, view_id: str, accept: str = None, pages: dict[str] = None) -> Response:
+def get_cell_data(
+    self, model_id: str, view_id: str, accept: str = None, pages: dict[str] = None
+) -> Response:
     headers = self.session.headers.copy()
     if accept:
         headers["Accept"] = accept
@@ -287,6 +289,14 @@ def get_cell_data(self, model_id: str, view_id: str, accept: str = None, pages: 
         f"{self._api_main_url}/models/{model_id}/views/{view_id}/data",
         params=params,
         headers=headers,
+    )
+
+
+def post_cell_data(self, model_id: str, module_id: str, data: list[dict]) -> Response:
+    return self.request(
+        "POST",
+        f"{self._api_main_url}/models/{model_id}/modules/{module_id}/data",
+        data=json.dumps(data),
     )
 
 

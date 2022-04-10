@@ -95,6 +95,17 @@ t_conn.check_dimension_items_id(t["model_id"], view_dimension_id, dim_names)
 t_conn.get_cell_data(t["model_id"], module_id)
 t_conn.get_cell_data(t["model_id"], module_id, apapi.utils.TEXT_CSV)
 t_conn.get_cell_data(t["model_id"], module_id, apapi.utils.TEXT_CSV_ESCAPED)
+cells = [
+    {
+        "lineItemId": lineitem_id,
+        "dimensions": [
+            {"dimensionName": "Time", "itemName": "Jan 22"},
+            {"dimensionName": "Versions", "itemName": "Actual"},
+        ],
+        "value": -1.2345,
+    }
+]
+t_conn.post_cell_data(t["model_id"], module_id, cells)
 
 # Actions
 t_conn.get_exports(t["workspace_id"], t["model_id"])
