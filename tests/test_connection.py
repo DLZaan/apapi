@@ -121,6 +121,7 @@ t_conn.run_export(t["workspace_id"], t["model_id"], t["export_id"])
 data = t_conn.download_data(t["workspace_id"], t["model_id"], t["export_id"])
 t_conn.upload_data(t["workspace_id"], t["model_id"], t["file_id"], data)
 t_conn.run_import(t["workspace_id"], t["model_id"], t["import_id"])
+t_conn.delete_file(t["workspace_id"], t["model_id"], t["file_id"])
 # requires: deletion action
 t_conn.run_action(t["workspace_id"], t["model_id"], t["action_id"])
 # requires: process with import (column1: Users, column2: Date, Versions: ask each time)

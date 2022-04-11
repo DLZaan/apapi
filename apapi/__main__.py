@@ -292,6 +292,8 @@ def main():
 
     args_dict = vars(parser.parse_args(args=None if sys.argv[1:] else ["-h"]))
 
+    raise NotImplementedError("Apapi module execution is not supported yet.")
+
 
 if __name__ == "__main__":
     main()

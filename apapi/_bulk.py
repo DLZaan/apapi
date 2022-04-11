@@ -39,6 +39,13 @@ def download_data(self, workspace_id: str, model_id: str, file_id: str) -> bytes
     return data
 
 
+def delete_file(self, workspace_id: str, model_id: str, file_id: str) -> Response:
+    return self.request(
+        "DELETE",
+        f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/files/{file_id}",
+    )
+
+
 def _run_action(
     self,
     workspace_id: str,

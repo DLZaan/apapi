@@ -21,6 +21,7 @@ class Connection:
         _run_action,
         upload_data,
         download_data,
+        delete_file,
         run_import,
         run_export,
         run_action,
