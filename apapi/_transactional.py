@@ -9,6 +9,7 @@ import json
 from requests import Response
 from .utils import APP_JSON
 
+
 # Users
 def get_users(self) -> Response:
     return self.request("GET", f"{self._api_main_url}/users")
@@ -301,28 +302,28 @@ def post_cell_data(self, model_id: str, module_id: str, data: list[dict]) -> Res
 
 
 # Actions
-def _get_actions(self, workspace_id: str, model_id: str, action_type: str) -> Response:
+def _get_actions(self, model_id: str, action_type: str) -> Response:
     return self.request(
         "GET",
-        f"{self._api_main_url}/workspaces/{workspace_id}/models/{model_id}/{action_type}",
+        f"{self._api_main_url}/models/{model_id}/{action_type}",
     )
 
 
-def get_imports(self, workspace_id: str, model_id: str) -> Response:
-    return self._get_actions(workspace_id, model_id, "imports")
+def get_imports(self, model_id: str) -> Response:
+    return self._get_actions(model_id, "imports")
 
 
-def get_exports(self, workspace_id: str, model_id: str) -> Response:
-    return self._get_actions(workspace_id, model_id, "exports")
+def get_exports(self, model_id: str) -> Response:
+    return self._get_actions(model_id, "exports")
 
 
-def get_actions(self, workspace_id: str, model_id: str) -> Response:
-    return self._get_actions(workspace_id, model_id, "actions")
+def get_actions(self, model_id: str) -> Response:
+    return self._get_actions(model_id, "actions")
 
 
-def get_processes(self, workspace_id: str, model_id: str) -> Response:
-    return self._get_actions(workspace_id, model_id, "processes")
+def get_processes(self, model_id: str) -> Response:
+    return self._get_actions(model_id, "processes")
 
 
-def get_files(self, workspace_id: str, model_id: str) -> Response:
-    return self._get_actions(workspace_id, model_id, "files")
+def get_files(self, model_id: str) -> Response:
+    return self._get_actions(model_id, "files")

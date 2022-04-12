@@ -108,27 +108,27 @@ cells = [
 t_conn.post_cell_data(t["model_id"], module_id, cells)
 
 # Actions
-t_conn.get_exports(t["workspace_id"], t["model_id"])
-t_conn.get_imports(t["workspace_id"], t["model_id"])
-t_conn.get_actions(t["workspace_id"], t["model_id"])
-t_conn.get_processes(t["workspace_id"], t["model_id"])
-t_conn.get_files(t["workspace_id"], t["model_id"])
+t_conn.get_exports(t["model_id"])
+t_conn.get_imports(t["model_id"])
+t_conn.get_actions(t["model_id"])
+t_conn.get_processes(t["model_id"])
+t_conn.get_files(t["model_id"])
 
 # BULK
 # requires: export to CSV, and import from CSV using same file template
-t_conn.run_export(t["workspace_id"], t["model_id"], t["export_id"])
+t_conn.run_export(t["model_id"], t["export_id"])
 # we use the fact (undocumented!) that for exports action_id=file_id
-data = t_conn.download_data(t["workspace_id"], t["model_id"], t["export_id"])
-t_conn.upload_data(t["workspace_id"], t["model_id"], t["file_id"], data)
-t_conn.run_import(t["workspace_id"], t["model_id"], t["import_id"])
-t_conn.delete_file(t["workspace_id"], t["model_id"], t["file_id"])
+data = t_conn.download_data(t["model_id"], t["export_id"])
+t_conn.upload_data(t["model_id"], t["file_id"], data)
+t_conn.run_import(t["model_id"], t["import_id"])
+t_conn.delete_file(t["model_id"], t["file_id"])
 # requires: deletion action
-t_conn.run_action(t["workspace_id"], t["model_id"], t["action_id"])
+t_conn.run_action(t["model_id"], t["action_id"])
 # requires: process with import (column1: Users, column2: Date, Versions: ask each time)
 i_data = f"{t['email']},2022-04-01".encode()
 mapping = apapi.utils.DEFAULT_DATA.copy()
 mapping["mappingParameters"] = [{"entityType": "Version", "entityName": "Actual"}]
-t_conn.upload_data(t["workspace_id"], t["model_id"], t["file_id_2"], i_data)
-t_conn.run_process(t["workspace_id"], t["model_id"], t["process_id"], mapping)
+t_conn.upload_data(t["model_id"], t["file_id_2"], i_data)
+t_conn.run_process(t["model_id"], t["process_id"], mapping)
 
 t_conn.close()
