@@ -33,6 +33,12 @@ class AuthType(enum.Enum):
     CERT = 2
 
 
+class ExportType(enum.Enum):
+    GRID = "GRID_ALL_PAGES"
+    TABULAR_SINGLE = "TABULAR_SINGLE_COLUMN"
+    TABULAR_MULTI = "TABULAR_MULTI_COLUMN"
+
+
 def get_generic_session(retry_count: int = 3) -> Session:
     adapter = HTTPAdapter(
         max_retries=Retry(

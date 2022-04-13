@@ -76,6 +76,10 @@ class Connection:
         check_dimension_items_id,
         # Cells
         get_cell_data,
+        start_large_cell_read,
+        get_large_cell_read_status,
+        get_large_cell_read_data,
+        delete_large_cell_read,
         post_cell_data,
         # Actions
         _get_actions,

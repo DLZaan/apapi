@@ -7,7 +7,7 @@ Functions for Connection class responsible for Transactional API endpoints
 
 import json
 from requests import Response
-from .utils import APP_JSON
+from .utils import APP_JSON, TEXT_CSV, ExportType
 
 
 # Users
@@ -290,6 +290,46 @@ def get_cell_data(
         f"{self._api_main_url}/models/{model_id}/views/{view_id}/data",
         params=params,
         headers=headers,
+    )
+
+
+def start_large_cell_read(
+    self, model_id: str, view_id: str, mode: ExportType
+) -> Response:
+    return self.request(
+        "POST",
+        f"{self._api_main_url}/models/{model_id}/views/{view_id}/readRequests",
+        data=json.dumps({"exportType": mode.value}),
+    )
+
+
+def get_large_cell_read_status(
+    self, model_id: str, view_id: str, request_id: str
+) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/views/{view_id}/readRequests/{request_id}",
+    )
+
+
+def get_large_cell_read_data(
+    self, model_id: str, view_id: str, request_id: str, page: str
+) -> Response:
+    headers = self.session.headers.copy()
+    headers["Accept"] = TEXT_CSV
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/views/{view_id}/readRequests/{request_id}/pages/{page}",
+        headers=headers,
+    )
+
+
+def delete_large_cell_read(
+    self, model_id: str, view_id: str, request_id: str
+) -> Response:
+    return self.request(
+        "DELETE",
+        f"{self._api_main_url}/models/{model_id}/views/{view_id}/readRequests/{request_id}",
     )
 
 
