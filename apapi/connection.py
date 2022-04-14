@@ -18,10 +18,23 @@ class Connection:
     """An Anaplan connection session. Provides authentication and basic requesting."""
 
     from ._bulk import (
-        _run_action,
+        # Actions
+        _get_actions,
+        get_imports,
+        get_exports,
+        get_actions,
+        get_processes,
+        get_files,
+        # Action details
+        get_import,
+        get_export,
+        get_process,
+        # Files manipulation
         upload_data,
         download_data,
         delete_file,
+        # Run action
+        _run_action,
         run_import,
         run_export,
         run_action,
@@ -67,7 +80,7 @@ class Connection:
         # Views
         get_views,
         get_module_views,
-        get_view,
+        get_view_dimensions,
         # Dimensions
         get_dimension_items,
         get_lineitem_dimensions,
@@ -81,13 +94,6 @@ class Connection:
         get_large_cell_read_data,
         delete_large_cell_read,
         post_cell_data,
-        # Actions
-        _get_actions,
-        get_imports,
-        get_exports,
-        get_actions,
-        get_processes,
-        get_files,
     )
 
     def __init__(

@@ -78,7 +78,7 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     # Views
     t_conn.get_views(t["model_id"])
     t_conn.get_module_views(t["model_id"], module_id)
-    view = t_conn.get_view(t["model_id"], module_id).json()
+    view = t_conn.get_view_dimensions(t["model_id"], module_id).json()
 
     # Dimensions
     t_conn.get_dimension_items(t["model_id"], t["list_id"])
@@ -138,8 +138,10 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
 
     # BULK
     # requires: export to CSV, and import from CSV using same file template
+    t_conn.get_export(t["model_id"], t["export_id"])
     t_conn.run_export(t["model_id"], t["export_id"])
     # we use the fact (undocumented!) that for exports action_id=file_id
+    t_conn.get_import(t["model_id"], t["import_id"])
     data = t_conn.download_data(t["model_id"], t["export_id"])
     t_conn.upload_data(t["model_id"], t["file_id"], data)
     t_conn.run_import(t["model_id"], t["import_id"])
@@ -148,6 +150,7 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.run_action(t["model_id"], t["action_id"])
     # requires: process with import
     # import defined as: column1->Users, column2->Date, Versions->ask each time
+    t_conn.get_process(t["model_id"], t["process_id"])
     i_data = f"{t['email']},2022-04-01".encode()
     mapping = apapi.utils.DEFAULT_DATA.copy()
     mapping["mappingParameters"] = [{"entityType": "Version", "entityName": "Actual"}]

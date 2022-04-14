@@ -224,7 +224,7 @@ def get_module_views(
     )
 
 
-def get_view(self, model_id: str, view_id: str) -> Response:
+def get_view_dimensions(self, model_id: str, view_id: str) -> Response:
     return self.request(
         "GET", f"{self._api_main_url}/models/{model_id}/views/{view_id}"
     )
@@ -339,31 +339,3 @@ def post_cell_data(self, model_id: str, module_id: str, data: list[dict]) -> Res
         f"{self._api_main_url}/models/{model_id}/modules/{module_id}/data",
         data=json.dumps(data),
     )
-
-
-# Actions
-def _get_actions(self, model_id: str, action_type: str) -> Response:
-    return self.request(
-        "GET",
-        f"{self._api_main_url}/models/{model_id}/{action_type}",
-    )
-
-
-def get_imports(self, model_id: str) -> Response:
-    return self._get_actions(model_id, "imports")
-
-
-def get_exports(self, model_id: str) -> Response:
-    return self._get_actions(model_id, "exports")
-
-
-def get_actions(self, model_id: str) -> Response:
-    return self._get_actions(model_id, "actions")
-
-
-def get_processes(self, model_id: str) -> Response:
-    return self._get_actions(model_id, "processes")
-
-
-def get_files(self, model_id: str) -> Response:
-    return self._get_actions(model_id, "files")

@@ -10,6 +10,56 @@ from requests import Response
 from .utils import APP_8STREAM, DEFAULT_DATA
 
 
+# Actions
+def _get_actions(self, model_id: str, action_type: str) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/{action_type}",
+    )
+
+
+def get_imports(self, model_id: str) -> Response:
+    return self._get_actions(model_id, "imports")
+
+
+def get_exports(self, model_id: str) -> Response:
+    return self._get_actions(model_id, "exports")
+
+
+def get_actions(self, model_id: str) -> Response:
+    return self._get_actions(model_id, "actions")
+
+
+def get_processes(self, model_id: str) -> Response:
+    return self._get_actions(model_id, "processes")
+
+
+def get_files(self, model_id: str) -> Response:
+    return self._get_actions(model_id, "files")
+
+
+# Action details
+def get_import(self, model_id: str, import_id: str) -> Response:
+    return self.request(
+        "GET", f"{self._api_main_url}/models/{model_id}/imports/{import_id}"
+    )
+
+
+def get_export(self, model_id: str, export_id: str) -> Response:
+    return self.request(
+        "GET", f"{self._api_main_url}/models/{model_id}/exports/{export_id}"
+    )
+
+
+def get_process(self, model_id: str, process_id: str, details: bool = None) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/processes/{process_id}",
+        {"showImportDataSource": self.details if details is None else details},
+    )
+
+
+# Files manipulation
 def upload_data(self, model_id: str, file_id: str, data: bytes) -> Response:
     headers = self.session.headers.copy()
     headers["Content-Type"] = APP_8STREAM
@@ -44,6 +94,7 @@ def delete_file(self, model_id: str, file_id: str) -> Response:
     )
 
 
+# Run action
 def _run_action(
     self,
     model_id: str,
