@@ -43,6 +43,20 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.get_list(t["model_id"], t["list_id"])
     t_conn.get_list_items(t["model_id"], t["list_id"])
     t_conn.get_list_items(t["model_id"], t["list_id"], True, apapi.utils.TEXT_CSV)
+    large_list_read = t_conn.start_large_list_read(t["model_id"], t["list_id"]).json()
+    large_list_read_id = large_list_read["listReadRequest"]["requestId"]
+    while large_list_read["listReadRequest"]["requestState"] != "COMPLETE":
+        large_list_read = t_conn.get_large_list_read_status(
+            t["model_id"], t["list_id"], large_list_read_id
+        ).json()
+    list_pages = [
+        t_conn.get_large_list_read_data(
+            t["model_id"], t["list_id"], large_list_read_id, str(page)
+        ).content
+        for page in range(large_list_read["listReadRequest"]["availablePages"])
+    ]
+    t_conn.delete_large_list_read(t["model_id"], t["list_id"], large_list_read_id)
+
     new_items = [
         {"code": "t1", "properties": {"p-text": "t2"}, "subsets": {"10": True}}
     ]
@@ -109,12 +123,11 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
         large_read = t_conn.get_large_cell_read_status(
             t["model_id"], module_id, large_read_id
         ).json()
-    available_pages = int(large_read["viewReadRequest"]["availablePages"])
     pages = [
         t_conn.get_large_cell_read_data(
             t["model_id"], module_id, large_read_id, str(page)
         ).content
-        for page in range(available_pages)
+        for page in range(large_read["viewReadRequest"]["availablePages"])
     ]
     t_conn.delete_large_cell_read(t["model_id"], module_id, large_read_id)
     cells = [

@@ -149,6 +149,43 @@ def get_list_items(
     )
 
 
+def start_large_list_read(self, model_id: str, list_id: str) -> Response:
+    return self.request(
+        "POST",
+        f"{self._api_main_url}/models/{model_id}/lists/{list_id}/readRequests",
+    )
+
+
+def get_large_list_read_status(
+    self, model_id: str, list_id: str, request_id: str
+) -> Response:
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/lists/{list_id}/readRequests/{request_id}",
+    )
+
+
+def get_large_list_read_data(
+    self, model_id: str, list_id: str, request_id: str, page: str
+) -> Response:
+    headers = self.session.headers.copy()
+    headers["Accept"] = TEXT_CSV
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/lists/{list_id}/readRequests/{request_id}/pages/{page}",
+        headers=headers,
+    )
+
+
+def delete_large_list_read(
+    self, model_id: str, list_id: str, request_id: str
+) -> Response:
+    return self.request(
+        "DELETE",
+        f"{self._api_main_url}/models/{model_id}/lists/{list_id}/readRequests/{request_id}",
+    )
+
+
 def add_list_items(self, model_id: str, list_id: str, data: list[dict]) -> Response:
     return self.request(
         "POST",

@@ -1,6 +1,6 @@
 # APAPI
 
-**APAPI** is a library that allows you to connect to Anaplan API v2 (Bulk, and soon Transactional) using Python. 
+**APAPI** is a library that allows you to connect to Anaplan API v2 (Bulk and Transactional) using Python. 
 Here we export some CSV and import it back to Anaplan:
 ```python
 >>> import apapi
