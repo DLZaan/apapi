@@ -18,8 +18,10 @@ API_URL = "https://api.anaplan.com"
 USER_AGENT = f"{__title__}/{__version__}"
 APP_JSON = "application/json"
 APP_8STREAM = "application/octet-stream"
+APP_GZIP = "application/x-gzip"
 TEXT_CSV = "text/csv"
 TEXT_CSV_ESCAPED = "text/csv;escaped=true"
+ENCODING_GZIP = "gzip,deflate"
 DEFAULT_HEADERS = {
     "Content-Type": APP_JSON,
     "Accept": APP_JSON,

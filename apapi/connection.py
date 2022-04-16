@@ -30,6 +30,9 @@ class Connection:
         get_export,
         get_process,
         # Files manipulation
+        set_data_chunk_count,
+        upload_data_chunk,
+        set_upload_complete,
         upload_data,
         download_data,
         delete_file,
@@ -117,6 +120,7 @@ class Connection:
         self._lock = threading.Lock()
 
         self.details: bool = True
+        self.compress: bool = True
         self.timeout: float = 3.5
         self.session: Session = session
 

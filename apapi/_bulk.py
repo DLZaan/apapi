@@ -7,7 +7,7 @@ Functions for Connection class responsible for Bulk API capabilities
 import json
 from requests import Response
 
-from .utils import APP_8STREAM, DEFAULT_DATA
+from .utils import APP_8STREAM, APP_GZIP, DEFAULT_DATA
 
 
 # Actions
@@ -60,6 +60,35 @@ def get_process(self, model_id: str, process_id: str, details: bool = None) -> R
 
 
 # Files manipulation
+def set_data_chunk_count(self, model_id: str, file_id: str, count: int) -> Response:
+    return self.request(
+        "POST",
+        f"{self._api_main_url}/models/{model_id}/files/{file_id}",
+        data=json.dumps({"chunkCount": count}),
+    )
+
+
+def upload_data_chunk(
+    self, model_id: str, file_id: str, data: bytes, chunk: int, compressed: bool = False
+) -> Response:
+    headers = self.session.headers.copy()
+    headers["Content-Type"] = APP_GZIP if compressed else APP_8STREAM
+    return self.request(
+        "PUT",
+        f"{self._api_main_url}/models/{model_id}/files/{file_id}/chunks/{chunk}",
+        data=data,
+        headers=headers,
+    )
+
+
+def set_upload_complete(self, model_id: str, file_id: str) -> Response:
+    return self.request(
+        "POST",
+        f"{self._api_main_url}/models/{model_id}/files/{file_id}/complete",
+        data=json.dumps({"id": file_id}),
+    )
+
+
 def upload_data(self, model_id: str, file_id: str, data: bytes) -> Response:
     headers = self.session.headers.copy()
     headers["Content-Type"] = APP_8STREAM

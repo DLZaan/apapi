@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import apapi
+import gzip
 import json
 
 with open("tests/test.json", "r") as f:
     t = json.loads(f.read())
 
 with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
+    t_conn.details = False
+    t_conn.compress = True
     # Users
     t_conn.get_users()
     me = t_conn.get_me()
@@ -56,7 +59,6 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
         for page in range(large_list_read["listReadRequest"]["availablePages"])
     ]
     t_conn.delete_large_list_read(t["model_id"], t["list_id"], large_list_read_id)
-
     new_items = [
         {"code": "t1", "properties": {"p-text": "t2"}, "subsets": {"10": True}}
     ]
@@ -142,6 +144,7 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     ]
     t_conn.post_cell_data(t["model_id"], module_id, cells)
 
+    # BULK
     # Actions
     t_conn.get_exports(t["model_id"])
     t_conn.get_imports(t["model_id"])
@@ -149,14 +152,20 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.get_processes(t["model_id"])
     t_conn.get_files(t["model_id"])
 
-    # BULK
     # requires: export to CSV, and import from CSV using same file template
     t_conn.get_export(t["model_id"], t["export_id"])
     t_conn.run_export(t["model_id"], t["export_id"])
     # we use the fact (undocumented!) that for exports action_id=file_id
     t_conn.get_import(t["model_id"], t["import_id"])
     data = t_conn.download_data(t["model_id"], t["export_id"])
-    t_conn.upload_data(t["model_id"], t["file_id"], data)
+
+    t_conn.set_data_chunk_count(t["model_id"], t["file_id"], 2)
+    t_conn.upload_data_chunk(t["model_id"], t["file_id"], data[: len(data) // 2], 0)
+    t_conn.upload_data_chunk(
+        t["model_id"], t["file_id"], gzip.compress(data[len(data) // 2 :]), 1, True
+    )
+    t_conn.set_upload_complete(t["model_id"], t["file_id"])
+
     t_conn.run_import(t["model_id"], t["import_id"])
     t_conn.delete_file(t["model_id"], t["file_id"])
     # requires: deletion action

@@ -7,7 +7,7 @@ Functions for Connection class responsible for Transactional API endpoints
 
 import json
 from requests import Response
-from .utils import APP_JSON, TEXT_CSV, ExportType
+from .utils import APP_JSON, TEXT_CSV, ExportType, ENCODING_GZIP
 
 
 # Users
@@ -166,10 +166,12 @@ def get_large_list_read_status(
 
 
 def get_large_list_read_data(
-    self, model_id: str, list_id: str, request_id: str, page: str
+    self, model_id: str, list_id: str, request_id: str, page: str, compress: bool = None
 ) -> Response:
     headers = self.session.headers.copy()
     headers["Accept"] = TEXT_CSV
+    if compress or (compress is None and self.compress):
+        headers["Accept-Encoding"] = ENCODING_GZIP
     return self.request(
         "GET",
         f"{self._api_main_url}/models/{model_id}/lists/{list_id}/readRequests/{request_id}/pages/{page}",
@@ -350,10 +352,12 @@ def get_large_cell_read_status(
 
 
 def get_large_cell_read_data(
-    self, model_id: str, view_id: str, request_id: str, page: str
+    self, model_id: str, view_id: str, request_id: str, page: str, compress: bool = None
 ) -> Response:
     headers = self.session.headers.copy()
     headers["Accept"] = TEXT_CSV
+    if compress or (compress is None and self.compress):
+        headers["Accept-Encoding"] = ENCODING_GZIP
     return self.request(
         "GET",
         f"{self._api_main_url}/models/{model_id}/views/{view_id}/readRequests/{request_id}/pages/{page}",
