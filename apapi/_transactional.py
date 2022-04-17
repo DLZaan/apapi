@@ -6,7 +6,9 @@ Functions for Connection class responsible for Transactional API endpoints
 """
 
 import json
+
 from requests import Response
+
 from .utils import APP_JSON, TEXT_CSV, ExportType, ENCODING_GZIP
 
 

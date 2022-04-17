@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+.. include:: ../README.md
+"""
 from .__version__ import (
     __title__,
     __description__,

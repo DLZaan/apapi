@@ -7,8 +7,9 @@ This module provides a Connection object to use for calling API endpoints
 
 import base64
 import threading
-from requests import Response, Session
 import time
+
+from requests import Response, Session
 
 from .authentication import AnaplanAuth
 from .utils import AuthType, AUTH_URL, API_URL, DEFAULT_HEADERS, get_generic_session
@@ -42,6 +43,18 @@ class Connection:
         run_export,
         run_action,
         run_process,
+        # Get tasks
+        _get_action_tasks,
+        get_import_tasks,
+        get_export_tasks,
+        get_action_tasks,
+        get_process_tasks,
+        # Check task
+        _get_action_task,
+        get_import_task,
+        get_export_task,
+        get_action_task,
+        get_process_task,
     )
 
     from ._transactional import (
@@ -182,6 +195,7 @@ class Connection:
     def request(
         self, method: str, url: str, params: dict = None, data=None, headers=None
     ) -> Response:
+        """Default wrapper of session's request method"""
         if headers:
             response = self.session.request(
                 method, url, params, data, timeout=self.timeout, headers=headers

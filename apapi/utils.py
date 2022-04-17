@@ -7,9 +7,11 @@ but might also be useful for external consumption.
 """
 
 import enum
+
 from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
+
 from apapi import __title__, __version__
 
 AUTH_URL = "https://auth.anaplan.com"
@@ -31,17 +33,23 @@ DEFAULT_DATA = {"localeName": "en_US"}
 
 
 class AuthType(enum.Enum):
+    """Needed during initialization of connection to choose
+    which authentication option should be used"""
+
     BASIC = 1
     CERT = 2
 
 
 class ExportType(enum.Enum):
+    """Needed for large cell view read to choose which format should be used"""
+
     GRID = "GRID_ALL_PAGES"
     TABULAR_SINGLE = "TABULAR_SINGLE_COLUMN"
     TABULAR_MULTI = "TABULAR_MULTI_COLUMN"
 
 
 def get_generic_session(retry_count: int = 3) -> Session:
+    """Returns default session: headers & adapter (with given retry count) mounted"""
     adapter = HTTPAdapter(
         max_retries=Retry(
             total=retry_count,

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-import apapi
 import gzip
 import json
+
+import apapi
 
 with open("tests/test.json", "r") as f:
     t = json.loads(f.read())
@@ -152,9 +153,18 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.get_processes(t["model_id"])
     t_conn.get_files(t["model_id"])
 
+    def doing(response) -> bool:
+        return response.json()["task"]["taskState"] != "COMPLETE"
+
+    def contains(response, task_id) -> bool:
+        return any(task_id == i["taskId"] for i in reversed(response.json()["tasks"]))
+
     # requires: export to CSV, and import from CSV using same file template
     t_conn.get_export(t["model_id"], t["export_id"])
-    t_conn.run_export(t["model_id"], t["export_id"])
+    e_task = t_conn.run_export(t["model_id"], t["export_id"]).json()["task"]["taskId"]
+    assert contains(t_conn.get_export_tasks(t["model_id"], t["export_id"]), e_task)
+    while doing(t_conn.get_export_task(t["model_id"], t["export_id"], e_task)):
+        pass
     # we use the fact (undocumented!) that for exports action_id=file_id
     t_conn.get_import(t["model_id"], t["import_id"])
     data = t_conn.download_data(t["model_id"], t["export_id"])
@@ -166,10 +176,16 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     )
     t_conn.set_upload_complete(t["model_id"], t["file_id"])
 
-    t_conn.run_import(t["model_id"], t["import_id"])
+    i_task = t_conn.run_import(t["model_id"], t["import_id"]).json()["task"]["taskId"]
+    assert contains(t_conn.get_import_tasks(t["model_id"], t["import_id"]), i_task)
+    while doing(t_conn.get_import_task(t["model_id"], t["import_id"], i_task)):
+        pass
     t_conn.delete_file(t["model_id"], t["file_id"])
     # requires: deletion action
-    t_conn.run_action(t["model_id"], t["action_id"])
+    a_task = t_conn.run_action(t["model_id"], t["action_id"]).json()["task"]["taskId"]
+    assert contains(t_conn.get_action_tasks(t["model_id"], t["action_id"]), a_task)
+    while doing(t_conn.get_action_task(t["model_id"], t["action_id"], a_task)):
+        pass
     # requires: process with import
     # import defined as: column1->Users, column2->Date, Versions->ask each time
     t_conn.get_process(t["model_id"], t["process_id"])
@@ -177,4 +193,8 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     mapping = apapi.utils.DEFAULT_DATA.copy()
     mapping["mappingParameters"] = [{"entityType": "Version", "entityName": "Actual"}]
     t_conn.upload_data(t["model_id"], t["file_id_2"], i_data)
-    t_conn.run_process(t["model_id"], t["process_id"], mapping)
+    p_task = t_conn.run_process(t["model_id"], t["process_id"], mapping)
+    p_task = p_task.json()["task"]["taskId"]
+    assert contains(t_conn.get_process_tasks(t["model_id"], t["process_id"]), p_task)
+    while doing(t_conn.get_process_task(t["model_id"], t["process_id"], p_task)):
+        pass
