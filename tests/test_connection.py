@@ -169,8 +169,9 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.get_import(t["model_id"], t["import_id"])
     data = t_conn.download_data(t["model_id"], t["export_id"])
 
-    t_conn.set_data_chunk_count(t["model_id"], t["file_id"], 2)
-    t_conn.upload_data_chunk(t["model_id"], t["file_id"], data[: len(data) // 2], 0)
+    t_conn.set_data_chunk_count(t["model_id"], t["file_id"], -1)
+    # WARNING: "7" (instead of "2") is wrong on purpose, to fail task and get dump
+    t_conn.upload_data_chunk(t["model_id"], t["file_id"], data[: len(data) // 7], 0)
     t_conn.upload_data_chunk(
         t["model_id"], t["file_id"], gzip.compress(data[len(data) // 2 :]), 1, True
     )
@@ -180,6 +181,8 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     assert contains(t_conn.get_import_tasks(t["model_id"], t["import_id"]), i_task)
     while doing(t_conn.get_import_task(t["model_id"], t["import_id"], i_task)):
         pass
+    t_conn.get_import_task(t["model_id"], t["import_id"], i_task)
+    t_conn.get_import_task_failure_dump(t["model_id"], t["import_id"], i_task)
     t_conn.delete_file(t["model_id"], t["file_id"])
     # requires: deletion action
     a_task = t_conn.run_action(t["model_id"], t["action_id"]).json()["task"]["taskId"]

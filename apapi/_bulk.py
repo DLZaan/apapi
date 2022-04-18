@@ -8,7 +8,7 @@ import json
 
 from requests import Response
 
-from .utils import APP_8STREAM, APP_GZIP, DEFAULT_DATA
+from .utils import APP_8STREAM, APP_GZIP, DEFAULT_DATA, TEXT_CSV
 
 
 # Actions
@@ -207,3 +207,14 @@ def get_action_task(self, model_id: str, action_id: str, task_id: str) -> Respon
 
 def get_process_task(self, model_id: str, process_id: str, task_id: str) -> Response:
     return self._get_action_task(model_id, process_id, task_id, "processes")
+
+
+# Get dump
+def get_import_task_failure_dump(self, model_id: str, import_id: str, task_id: str) -> Response:
+    headers = self.session.headers.copy()
+    headers["Accept"] = APP_8STREAM
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/imports/{import_id}/tasks/{task_id}/dump",
+        headers=headers
+    )

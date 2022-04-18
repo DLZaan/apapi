@@ -55,6 +55,8 @@ class Connection:
         get_export_task,
         get_action_task,
         get_process_task,
+        # Get dump
+        get_import_task_failure_dump,
     )
 
     from ._transactional import (
@@ -159,9 +161,10 @@ class Connection:
             auth_string = str(
                 base64.b64encode(self._credentials.encode("utf-8")).decode("utf-8")
             )
-            self.session.headers["Authorization"] = "Basic " + auth_string
+            headers = self.session.headers.copy()
+            headers["Authorization"] = "Basic " + auth_string
             response = self.session.post(
-                f"{self._auth_url}/token/authenticate", timeout=self.timeout
+                f"{self._auth_url}/token/authenticate", headers=headers, timeout=self.timeout
             )
             if not response.ok:
                 raise Exception("Unable to authenticate", response.text)
