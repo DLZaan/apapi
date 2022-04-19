@@ -59,6 +59,7 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
         ).content
         for page in range(large_list_read["listReadRequest"]["availablePages"])
     ]
+    assert list_pages
     t_conn.delete_large_list_read(t["model_id"], t["list_id"], large_list_read_id)
     new_items = [
         {"code": "t1", "properties": {"p-text": "t2"}, "subsets": {"10": True}}
@@ -132,6 +133,7 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
         ).content
         for page in range(large_read["viewReadRequest"]["availablePages"])
     ]
+    assert pages
     t_conn.delete_large_cell_read(t["model_id"], module_id, large_read_id)
     cells = [
         {
@@ -181,7 +183,6 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     assert contains(t_conn.get_import_tasks(t["model_id"], t["import_id"]), i_task)
     while doing(t_conn.get_import_task(t["model_id"], t["import_id"], i_task)):
         pass
-    t_conn.get_import_task(t["model_id"], t["import_id"], i_task)
     t_conn.get_import_task_failure_dump(t["model_id"], t["import_id"], i_task)
     t_conn.delete_file(t["model_id"], t["file_id"])
     # requires: deletion action
@@ -192,12 +193,20 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     # requires: process with import
     # import defined as: column1->Users, column2->Date, Versions->ask each time
     t_conn.get_process(t["model_id"], t["process_id"])
-    i_data = f"{t['email']},2022-04-01".encode()
+    # WARNING: incorrect date on purpose, to fail task and get dump
+    i_data = f"{t['email']},2022-02-29".encode()
     mapping = apapi.utils.DEFAULT_DATA.copy()
     mapping["mappingParameters"] = [{"entityType": "Version", "entityName": "Actual"}]
     t_conn.upload_data(t["model_id"], t["file_id_2"], i_data)
     p_task = t_conn.run_process(t["model_id"], t["process_id"], mapping)
     p_task = p_task.json()["task"]["taskId"]
     assert contains(t_conn.get_process_tasks(t["model_id"], t["process_id"]), p_task)
-    while doing(t_conn.get_process_task(t["model_id"], t["process_id"], p_task)):
+    while doing(
+        p_task_state := t_conn.get_process_task(t["model_id"], t["process_id"], p_task)
+    ):
         pass
+    for result in p_task_state.json()["task"]["result"]["nestedResults"]:
+        if result["failureDumpAvailable"]:
+            t_conn.get_process_task_failure_dump(
+                t["model_id"], t["process_id"], p_task, result["objectId"]
+            )

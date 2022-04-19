@@ -210,11 +210,25 @@ def get_process_task(self, model_id: str, process_id: str, task_id: str) -> Resp
 
 
 # Get dump
-def get_import_task_failure_dump(self, model_id: str, import_id: str, task_id: str) -> Response:
+def get_import_task_failure_dump(
+    self, model_id: str, import_id: str, task_id: str
+) -> Response:
     headers = self.session.headers.copy()
     headers["Accept"] = APP_8STREAM
     return self.request(
         "GET",
         f"{self._api_main_url}/models/{model_id}/imports/{import_id}/tasks/{task_id}/dump",
-        headers=headers
+        headers=headers,
+    )
+
+
+def get_process_task_failure_dump(
+    self, model_id: str, process_id: str, task_id: str, object_id: str
+) -> Response:
+    headers = self.session.headers.copy()
+    headers["Accept"] = APP_8STREAM
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/processes/{process_id}/tasks/{task_id}/dumps/{object_id}",
+        headers=headers,
     )
