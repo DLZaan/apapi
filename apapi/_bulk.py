@@ -104,16 +104,13 @@ def upload_data(self, model_id: str, file_id: str, data: bytes) -> Response:
 def download_data(self, model_id: str, file_id: str) -> bytes:
     url = f"{self._api_main_url}/models/{model_id}/files/{file_id}/chunks"
     response = self.request("GET", url)
-    if not (response.ok and response.json()["meta"]["paging"]["currentPageSize"]):
-        raise Exception(f"Unable to get chunks count for a file {file_id}")
+    if not response.json()["meta"]["paging"]["currentPageSize"]:
+        raise Exception("Missing part in request response", url, response.text)
     data = b""
     headers = self.session.headers.copy()
     headers["Accept"] = APP_8STREAM
     for chunk_id in response.json()["chunks"]:
-        chunk = self.request("GET", f"{url}/{chunk_id['id']}", headers=headers)
-        if not chunk.ok:
-            raise Exception(f"Unable to get chunk {chunk_id} for file {file_id}")
-        data += chunk.content
+        data += self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
     return data
 
 
@@ -210,9 +207,7 @@ def get_process_task(self, model_id: str, process_id: str, task_id: str) -> Resp
 
 
 # Get dump
-def get_import_task_failure_dump(
-    self, model_id: str, import_id: str, task_id: str
-) -> Response:
+def get_import_dump(self, model_id: str, import_id: str, task_id: str) -> Response:
     headers = self.session.headers.copy()
     headers["Accept"] = APP_8STREAM
     return self.request(
@@ -222,7 +217,20 @@ def get_import_task_failure_dump(
     )
 
 
-def get_process_task_failure_dump(
+def download_import_dump(self, model_id: str, import_id: str, task_id: str) -> bytes:
+    url = f"{self._api_main_url}/models/{model_id}/imports/{import_id}/tasks/{task_id}/dump/chunks"
+    response = self.request("GET", url)
+    if not response.json()["meta"]["paging"]["currentPageSize"]:
+        raise Exception("Missing part in request response", url, response.text)
+    data = b""
+    headers = self.session.headers.copy()
+    headers["Accept"] = APP_8STREAM
+    for chunk_id in response.json()["chunks"]:
+        data += self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
+    return data
+
+
+def get_process_dump(
     self, model_id: str, process_id: str, task_id: str, object_id: str
 ) -> Response:
     headers = self.session.headers.copy()
@@ -232,3 +240,18 @@ def get_process_task_failure_dump(
         f"{self._api_main_url}/models/{model_id}/processes/{process_id}/tasks/{task_id}/dumps/{object_id}",
         headers=headers,
     )
+
+
+def download_process_dump(
+    self, model_id: str, process_id: str, task_id: str, object_id: str
+) -> bytes:
+    url = f"{self._api_main_url}/models/{model_id}/processes/{process_id}/tasks/{task_id}/dumps/{object_id}/chunks"
+    response = self.request("GET", url)
+    if not response.json()["meta"]["paging"]["currentPageSize"]:
+        raise Exception("Missing part in request response", url, response.text)
+    data = b""
+    headers = self.session.headers.copy()
+    headers["Accept"] = APP_8STREAM
+    for chunk_id in response.json()["chunks"]:
+        data += self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
+    return data

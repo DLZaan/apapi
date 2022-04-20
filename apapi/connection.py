@@ -56,8 +56,10 @@ class Connection:
         get_action_task,
         get_process_task,
         # Get dump
-        get_import_task_failure_dump,
-        get_process_task_failure_dump,
+        get_import_dump,
+        download_import_dump,
+        get_process_dump,
+        download_process_dump,
     )
 
     from ._transactional import (

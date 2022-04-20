@@ -183,7 +183,9 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     assert contains(t_conn.get_import_tasks(t["model_id"], t["import_id"]), i_task)
     while doing(t_conn.get_import_task(t["model_id"], t["import_id"], i_task)):
         pass
-    t_conn.get_import_task_failure_dump(t["model_id"], t["import_id"], i_task)
+    dump_v1 = t_conn.get_import_dump(t["model_id"], t["import_id"], i_task).content
+    dump_v2 = t_conn.download_import_dump(t["model_id"], t["import_id"], i_task)
+    assert dump_v1 == dump_v2
     t_conn.delete_file(t["model_id"], t["file_id"])
     # requires: deletion action
     a_task = t_conn.run_action(t["model_id"], t["action_id"]).json()["task"]["taskId"]
@@ -207,6 +209,10 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
         pass
     for result in p_task_state.json()["task"]["result"]["nestedResults"]:
         if result["failureDumpAvailable"]:
-            t_conn.get_process_task_failure_dump(
+            dump_v1 = t_conn.get_process_dump(
+                t["model_id"], t["process_id"], p_task, result["objectId"]
+            ).content
+            dump_v2 = t_conn.download_process_dump(
                 t["model_id"], t["process_id"], p_task, result["objectId"]
             )
+            assert dump_v1 == dump_v2
