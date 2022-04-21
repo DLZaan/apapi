@@ -101,17 +101,27 @@ def upload_data(self, model_id: str, file_id: str, data: bytes) -> Response:
     )
 
 
+def get_data(self, model_id: str, file_id: str) -> Response:
+    headers = self.session.headers.copy()
+    headers["Accept"] = APP_8STREAM
+    return self.request(
+        "GET",
+        f"{self._api_main_url}/models/{model_id}/files/{file_id}",
+        headers=headers,
+    )
+
+
 def download_data(self, model_id: str, file_id: str) -> bytes:
     url = f"{self._api_main_url}/models/{model_id}/files/{file_id}/chunks"
     response = self.request("GET", url)
     if not response.json()["meta"]["paging"]["currentPageSize"]:
         raise Exception("Missing part in request response", url, response.text)
-    data = b""
     headers = self.session.headers.copy()
     headers["Accept"] = APP_8STREAM
-    for chunk_id in response.json()["chunks"]:
-        data += self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
-    return data
+    return b"".join(
+        self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
+        for chunk_id in response.json()["chunks"]
+    )
 
 
 def delete_file(self, model_id: str, file_id: str) -> Response:
@@ -222,12 +232,12 @@ def download_import_dump(self, model_id: str, import_id: str, task_id: str) -> b
     response = self.request("GET", url)
     if not response.json()["meta"]["paging"]["currentPageSize"]:
         raise Exception("Missing part in request response", url, response.text)
-    data = b""
     headers = self.session.headers.copy()
     headers["Accept"] = APP_8STREAM
-    for chunk_id in response.json()["chunks"]:
-        data += self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
-    return data
+    return b"".join(
+        self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
+        for chunk_id in response.json()["chunks"]
+    )
 
 
 def get_process_dump(
@@ -249,9 +259,9 @@ def download_process_dump(
     response = self.request("GET", url)
     if not response.json()["meta"]["paging"]["currentPageSize"]:
         raise Exception("Missing part in request response", url, response.text)
-    data = b""
     headers = self.session.headers.copy()
     headers["Accept"] = APP_8STREAM
-    for chunk_id in response.json()["chunks"]:
-        data += self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
-    return data
+    return b"".join(
+        self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
+        for chunk_id in response.json()["chunks"]
+    )

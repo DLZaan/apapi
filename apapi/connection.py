@@ -35,6 +35,7 @@ class Connection:
         upload_data_chunk,
         set_upload_complete,
         upload_data,
+        get_data,
         download_data,
         delete_file,
         # Run action

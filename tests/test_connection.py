@@ -169,7 +169,8 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
         pass
     # we use the fact (undocumented!) that for exports action_id=file_id
     t_conn.get_import(t["model_id"], t["import_id"])
-    data = t_conn.download_data(t["model_id"], t["export_id"])
+    data = t_conn.get_data(t["model_id"], t["export_id"]).content
+    assert t_conn.download_data(t["model_id"], t["export_id"]) == data
 
     t_conn.set_data_chunk_count(t["model_id"], t["file_id"], -1)
     # WARNING: "7" (instead of "2") is wrong on purpose, to fail task and get dump
@@ -183,9 +184,9 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     assert contains(t_conn.get_import_tasks(t["model_id"], t["import_id"]), i_task)
     while doing(t_conn.get_import_task(t["model_id"], t["import_id"], i_task)):
         pass
-    dump_v1 = t_conn.get_import_dump(t["model_id"], t["import_id"], i_task).content
-    dump_v2 = t_conn.download_import_dump(t["model_id"], t["import_id"], i_task)
-    assert dump_v1 == dump_v2
+    assert t_conn.get_import_dump(
+        t["model_id"], t["import_id"], i_task
+    ).content == t_conn.download_import_dump(t["model_id"], t["import_id"], i_task)
     t_conn.delete_file(t["model_id"], t["file_id"])
     # requires: deletion action
     a_task = t_conn.run_action(t["model_id"], t["action_id"]).json()["task"]["taskId"]
@@ -209,10 +210,8 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
         pass
     for result in p_task_state.json()["task"]["result"]["nestedResults"]:
         if result["failureDumpAvailable"]:
-            dump_v1 = t_conn.get_process_dump(
+            assert t_conn.get_process_dump(
                 t["model_id"], t["process_id"], p_task, result["objectId"]
-            ).content
-            dump_v2 = t_conn.download_process_dump(
+            ).content == t_conn.download_process_dump(
                 t["model_id"], t["process_id"], p_task, result["objectId"]
             )
-            assert dump_v1 == dump_v2
