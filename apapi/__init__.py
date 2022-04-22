@@ -14,7 +14,10 @@ from .__version__ import (
 )
 from . import utils
 from .authentication import AnaplanAuth
-from .connection import Connection
+from .connection import BasicConnection
+from ._bulk import BulkConnection
+from ._transactional import TransactionalConnection
+from .full_connection import Connection
 
 # Set default logging handler to avoid "No handler found" warnings.
 import logging

@@ -12,7 +12,7 @@ from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-from apapi import __title__, __version__
+from .__version__ import __title__, __version__
 
 AUTH_URL = "https://auth.anaplan.com"
 API_URL = "https://api.anaplan.com"

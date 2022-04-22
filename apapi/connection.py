@@ -2,7 +2,8 @@
 """
 apapi.connection
 ~~~~~~~~~~~~~~~~
-This module provides a Connection object to use for calling API endpoints
+This module provides a Basic Connection class,
+which should be used to connect to Anaplan APIs
 """
 
 import base64
@@ -12,115 +13,11 @@ import time
 from requests import Response, Session
 
 from .authentication import AnaplanAuth
-from .utils import AuthType, AUTH_URL, API_URL, DEFAULT_HEADERS, get_generic_session
+from .utils import AuthType, AUTH_URL, API_URL, get_generic_session
 
 
-class Connection:
-    """An Anaplan connection session. Provides authentication and basic requesting."""
-
-    from ._bulk import (
-        # Actions
-        _get_actions,
-        get_imports,
-        get_exports,
-        get_actions,
-        get_processes,
-        get_files,
-        # Action details
-        get_import,
-        get_export,
-        get_process,
-        # Files manipulation
-        set_data_chunk_count,
-        upload_data_chunk,
-        set_upload_complete,
-        upload_data,
-        get_data,
-        download_data,
-        delete_file,
-        # Run action
-        _run_action,
-        run_import,
-        run_export,
-        run_action,
-        run_process,
-        # Get tasks
-        _get_action_tasks,
-        get_import_tasks,
-        get_export_tasks,
-        get_action_tasks,
-        get_process_tasks,
-        # Check task
-        _get_action_task,
-        get_import_task,
-        get_export_task,
-        get_action_task,
-        get_process_task,
-        # Get dump
-        get_import_dump,
-        download_import_dump,
-        get_process_dump,
-        download_process_dump,
-    )
-
-    from ._transactional import (
-        # Users
-        get_users,
-        get_me,
-        get_user,
-        get_workspace_users,
-        get_workspace_admins,
-        get_model_users,
-        # Workspaces
-        get_workspaces,
-        get_workspace,
-        # Models
-        get_models,
-        get_workspace_models,
-        get_model,
-        # Calendar
-        get_fiscal_year,
-        set_fiscal_year,
-        get_current_period,
-        set_current_period,
-        # Versions
-        get_versions,
-        set_version_switchover,
-        # Lists
-        get_lists,
-        get_list,
-        get_list_items,
-        start_large_list_read,
-        get_large_list_read_status,
-        get_large_list_read_data,
-        delete_large_list_read,
-        add_list_items,
-        update_list_items,
-        delete_list_items,
-        reset_list_index,
-        # Modules
-        get_modules,
-        # Lineitems
-        get_lineitems,
-        get_module_lineitems,
-        # Views
-        get_views,
-        get_module_views,
-        get_view_dimensions,
-        # Dimensions
-        get_dimension_items,
-        get_lineitem_dimensions,
-        get_lineitem_dimension_items,
-        get_view_dimension_items,
-        check_dimension_items_id,
-        # Cells
-        get_cell_data,
-        start_large_cell_read,
-        get_large_cell_read_status,
-        get_large_cell_read_data,
-        delete_large_cell_read,
-        post_cell_data,
-    )
+class BasicConnection:
+    """Basic Anaplan connection session. Provides authentication and requesting."""
 
     def __init__(
         self,
