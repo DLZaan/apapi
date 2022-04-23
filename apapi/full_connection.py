@@ -5,8 +5,8 @@ apapi.full_connection
 This module provides Connection class, which contains all available API functions
 """
 
-from ._bulk import BulkConnection
-from ._transactional import TransactionalConnection
+from .bulk import BulkConnection
+from .transactional import TransactionalConnection
 
 
 class Connection(

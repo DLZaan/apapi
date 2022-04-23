@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-apapi.connection
+apapi.basic_connection
 ~~~~~~~~~~~~~~~~
 This module provides a Basic Connection class,
 which should be used to connect to Anaplan APIs

@@ -169,16 +169,16 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
         pass
     # we use the fact (undocumented!) that for exports action_id=file_id
     t_conn.get_import(t["model_id"], t["import_id"])
-    data = t_conn.get_data(t["model_id"], t["export_id"]).content
-    assert t_conn.download_data(t["model_id"], t["export_id"]) == data
+    data = t_conn.get_file(t["model_id"], t["export_id"]).content
+    assert t_conn.download_file(t["model_id"], t["export_id"]) == data
 
-    t_conn.set_data_chunk_count(t["model_id"], t["file_id"], -1)
+    t_conn.set_file_chunk_count(t["model_id"], t["file_id"], -1)
     # WARNING: "7" (instead of "2") is wrong on purpose, to fail task and get dump
-    t_conn.upload_data_chunk(t["model_id"], t["file_id"], data[: len(data) // 7], 0)
-    t_conn.upload_data_chunk(
+    t_conn.upload_file_chunk(t["model_id"], t["file_id"], data[: len(data) // 7], 0)
+    t_conn.upload_file_chunk(
         t["model_id"], t["file_id"], gzip.compress(data[len(data) // 2 :]), 1, True
     )
-    t_conn.set_upload_complete(t["model_id"], t["file_id"])
+    t_conn.set_file_upload_complete(t["model_id"], t["file_id"])
 
     i_task = t_conn.run_import(t["model_id"], t["import_id"]).json()["task"]["taskId"]
     assert contains(t_conn.get_import_tasks(t["model_id"], t["import_id"]), i_task)
@@ -200,7 +200,7 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     i_data = f"{t['email']},2022-02-29".encode()
     mapping = apapi.utils.DEFAULT_DATA.copy()
     mapping["mappingParameters"] = [{"entityType": "Version", "entityName": "Actual"}]
-    t_conn.upload_data(t["model_id"], t["file_id_2"], i_data)
+    t_conn.upload_file(t["model_id"], t["file_id_2"], i_data)
     p_task = t_conn.run_process(t["model_id"], t["process_id"], mapping)
     p_task = p_task.json()["task"]["taskId"]
     assert contains(t_conn.get_process_tasks(t["model_id"], t["process_id"]), p_task)

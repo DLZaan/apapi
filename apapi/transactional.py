@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-apapi._transactional
+apapi.transactional
 ~~~~~~~~~~~~~~~~
 Child of Basic Connection class, responsible for Transactional API capabilities
 """
@@ -9,7 +9,7 @@ import json
 
 from requests import Response
 
-from .connection import BasicConnection
+from .basic_connection import BasicConnection
 from .utils import APP_JSON, TEXT_CSV, ExportType, ENCODING_GZIP
 
 

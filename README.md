@@ -6,13 +6,13 @@ Here we export some CSV and import it back to Anaplan:
 >>> import apapi
 >>> with apapi.Connection(f"{email}:{password}") as my_connection:
 >>>     my_connection.run_export(model_id, export_id)
->>>     data = my_connection.download_data(model_id, export_id)
+>>>     data = my_connection.download_file(model_id, export_id)
 >>>     print(data.decode())
 Versions,Data,Text
 Actual,1,test
 Budget,2.5,ąćęłńśżź
 Forecast,-3,😂
->>>     my_connection.upload_data(model_id, file_id, data)
+>>>     my_connection.upload_file(model_id, file_id, data)
 >>>     my_connection.run_import(model_id, import_id)
 ```
 Check [tests/test_connection.py](tests/test_connection.py) for more examples and hints about usage.

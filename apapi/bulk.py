@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-apapi._bulk
+apapi.bulk
 ~~~~~~~~~~~~~~~~
 Child of Basic Connection class, responsible for Bulk API capabilities
 """
@@ -8,7 +8,7 @@ import json
 
 from requests import Response
 
-from .connection import BasicConnection
+from .basic_connection import BasicConnection
 from .utils import APP_8STREAM, APP_GZIP, DEFAULT_DATA
 
 
@@ -58,14 +58,14 @@ class BulkConnection(BasicConnection):
         )
 
     # Files manipulation
-    def set_data_chunk_count(self, model_id: str, file_id: str, count: int) -> Response:
+    def set_file_chunk_count(self, model_id: str, file_id: str, count: int) -> Response:
         return self.request(
             "POST",
             f"{self._api_main_url}/models/{model_id}/files/{file_id}",
             data=json.dumps({"chunkCount": count}),
         )
 
-    def upload_data_chunk(
+    def upload_file_chunk(
         self,
         model_id: str,
         file_id: str,
@@ -82,14 +82,14 @@ class BulkConnection(BasicConnection):
             headers=headers,
         )
 
-    def set_upload_complete(self, model_id: str, file_id: str) -> Response:
+    def set_file_upload_complete(self, model_id: str, file_id: str) -> Response:
         return self.request(
             "POST",
             f"{self._api_main_url}/models/{model_id}/files/{file_id}/complete",
             data=json.dumps({"id": file_id}),
         )
 
-    def upload_data(self, model_id: str, file_id: str, data: bytes) -> Response:
+    def upload_file(self, model_id: str, file_id: str, data: bytes) -> Response:
         headers = self.session.headers.copy()
         headers["Content-Type"] = APP_8STREAM
         return self.request(
@@ -99,7 +99,7 @@ class BulkConnection(BasicConnection):
             headers=headers,
         )
 
-    def get_data(self, model_id: str, file_id: str) -> Response:
+    def get_file(self, model_id: str, file_id: str) -> Response:
         headers = self.session.headers.copy()
         headers["Accept"] = APP_8STREAM
         return self.request(
@@ -108,7 +108,7 @@ class BulkConnection(BasicConnection):
             headers=headers,
         )
 
-    def download_data(self, model_id: str, file_id: str) -> bytes:
+    def download_file(self, model_id: str, file_id: str) -> bytes:
         url = f"{self._api_main_url}/models/{model_id}/files/{file_id}/chunks"
         response = self.request("GET", url)
         if not response.json()["meta"]["paging"]["currentPageSize"]:
