@@ -32,7 +32,7 @@ APAPI supports Python 3.9+.
 
 ## How to Contribute
 
-Contributions are welcome, even if you can't code it - in such case, please submit an issue if you need any additional feature (preferably in the form of User Story, like _"As {who} I need {what} because {why}"_).
+Contributions are welcome, even if you can't code it - in such case, please submit an issue if you need any additional feature (preferably in the form of User Story, like *"As {who} I need {what} because {why}"*).
 If you encounter any bugs, please report the problem with a description and error log.
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/apapi)

@@ -17,7 +17,7 @@ from .authentication import AnaplanAuth
 from .basic_connection import BasicConnection
 from .bulk import BulkConnection
 from .transactional import TransactionalConnection
-from .full_connection import Connection
+from .connection import Connection
 
 # Set default logging handler to avoid "No handler found" warnings.
 import logging

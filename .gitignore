@@ -5,6 +5,7 @@ __pycache__/
 apapi.egg-info/
 build/
 dist/
+archived_dist/
 
 # IntelliJ/PyCharm
 .idea

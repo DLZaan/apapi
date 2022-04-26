@@ -16,26 +16,26 @@ class BulkConnection(BasicConnection):
     """Anaplan connection with Bulk API functions."""
 
     # Actions
-    def _get_actions(self, model_id: str, action_type: str) -> Response:
+    def generic_get_actions(self, model_id: str, action_type: str) -> Response:
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/{action_type}",
         )
 
     def get_imports(self, model_id: str) -> Response:
-        return self._get_actions(model_id, "imports")
+        return self.generic_get_actions(model_id, "imports")
 
     def get_exports(self, model_id: str) -> Response:
-        return self._get_actions(model_id, "exports")
+        return self.generic_get_actions(model_id, "exports")
 
     def get_actions(self, model_id: str) -> Response:
-        return self._get_actions(model_id, "actions")
+        return self.generic_get_actions(model_id, "actions")
 
     def get_processes(self, model_id: str) -> Response:
-        return self._get_actions(model_id, "processes")
+        return self.generic_get_actions(model_id, "processes")
 
     def get_files(self, model_id: str) -> Response:
-        return self._get_actions(model_id, "files")
+        return self.generic_get_actions(model_id, "files")
 
     # Action details
     def get_import(self, model_id: str, import_id: str) -> Response:
@@ -127,7 +127,7 @@ class BulkConnection(BasicConnection):
         )
 
     # Run action
-    def _run_action(
+    def generic_run_action(
         self,
         model_id: str,
         action_id: str,
@@ -143,19 +143,19 @@ class BulkConnection(BasicConnection):
         )
 
     def run_import(self, model_id: str, import_id: str, data=None) -> Response:
-        return self._run_action(model_id, import_id, "imports", data)
+        return self.generic_run_action(model_id, import_id, "imports", data)
 
     def run_export(self, model_id: str, export_id: str) -> Response:
-        return self._run_action(model_id, export_id, "exports")
+        return self.generic_run_action(model_id, export_id, "exports")
 
     def run_action(self, model_id: str, action_id: str) -> Response:
-        return self._run_action(model_id, action_id, "actions")
+        return self.generic_run_action(model_id, action_id, "actions")
 
     def run_process(self, model_id: str, process_id: str, data=None) -> Response:
-        return self._run_action(model_id, process_id, "processes", data)
+        return self.generic_run_action(model_id, process_id, "processes", data)
 
     # Get tasks
-    def _get_action_tasks(
+    def generic_get_action_tasks(
         self, model_id: str, action_id: str, action_type: str
     ) -> Response:
         return self.request(
@@ -164,19 +164,19 @@ class BulkConnection(BasicConnection):
         )
 
     def get_import_tasks(self, model_id: str, import_id: str) -> Response:
-        return self._get_action_tasks(model_id, import_id, "imports")
+        return self.generic_get_action_tasks(model_id, import_id, "imports")
 
     def get_export_tasks(self, model_id: str, export_id: str) -> Response:
-        return self._get_action_tasks(model_id, export_id, "exports")
+        return self.generic_get_action_tasks(model_id, export_id, "exports")
 
     def get_action_tasks(self, model_id: str, action_id: str) -> Response:
-        return self._get_action_tasks(model_id, action_id, "actions")
+        return self.generic_get_action_tasks(model_id, action_id, "actions")
 
     def get_process_tasks(self, model_id: str, process_id: str) -> Response:
-        return self._get_action_tasks(model_id, process_id, "processes")
+        return self.generic_get_action_tasks(model_id, process_id, "processes")
 
     # Get task
-    def _get_action_task(
+    def generic_get_action_task(
         self, model_id: str, action_id: str, task_id: str, action_type: str
     ) -> Response:
         return self.request(
@@ -185,18 +185,18 @@ class BulkConnection(BasicConnection):
         )
 
     def get_import_task(self, model_id: str, import_id: str, task_id: str) -> Response:
-        return self._get_action_task(model_id, import_id, task_id, "imports")
+        return self.generic_get_action_task(model_id, import_id, task_id, "imports")
 
     def get_export_task(self, model_id: str, export_id: str, task_id: str) -> Response:
-        return self._get_action_task(model_id, export_id, task_id, "exports")
+        return self.generic_get_action_task(model_id, export_id, task_id, "exports")
 
     def get_action_task(self, model_id: str, action_id: str, task_id: str) -> Response:
-        return self._get_action_task(model_id, action_id, task_id, "actions")
+        return self.generic_get_action_task(model_id, action_id, task_id, "actions")
 
     def get_process_task(
         self, model_id: str, process_id: str, task_id: str
     ) -> Response:
-        return self._get_action_task(model_id, process_id, task_id, "processes")
+        return self.generic_get_action_task(model_id, process_id, task_id, "processes")
 
     # Get dump
     def get_import_dump(self, model_id: str, import_id: str, task_id: str) -> Response:

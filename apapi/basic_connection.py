@@ -27,7 +27,7 @@ class BasicConnection:
         auth_url: str = AUTH_URL,
         api_url: str = API_URL,
     ):
-
+        """Initialize Connection and try to authenticate"""
         self._credentials = credentials
         self._auth_type = auth_type
         self._auth_url = auth_url
@@ -88,7 +88,7 @@ class BasicConnection:
                     f"{self._auth_url}/token/refresh", timeout=self.timeout
                 )
                 if not response.ok:
-                    raise Exception("Unable to refresh the token", response.text)
+                    self.authenticate()
                 self._timer.cancel()
                 self._handle_token(response.json()["tokenInfo"])
 
