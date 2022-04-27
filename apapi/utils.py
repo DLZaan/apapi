@@ -48,6 +48,13 @@ class ExportType(enum.Enum):
     TABULAR_MULTI = "TABULAR_MULTI_COLUMN"
 
 
+class ModelOnlineStatus(enum.Enum):
+    """Needed for change of model's online status"""
+
+    OFFLINE = "offline"
+    ONLINE = "online"
+
+
 def get_generic_session(retry_count: int = 3) -> Session:
     """Returns default session: headers & adapter (with given retry count) mounted"""
     adapter = HTTPAdapter(

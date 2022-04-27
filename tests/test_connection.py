@@ -8,14 +8,11 @@ with open("tests/test.json", "r") as f:
     t = json.loads(f.read())
 
 with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
-    t_conn.details = False
-    t_conn.compress = True
     # Users
     t_conn.get_users()
-    me = t_conn.get_me()
-    assert me.json()["user"]["email"] == t["email"]
-    also_me = t_conn.get_user(me.json()["user"]["id"])
-    assert also_me.json()["user"] == me.json()["user"]
+    me = t_conn.get_me().json()["user"]
+    assert me["email"] == t["email"]
+    assert t_conn.get_user(me["id"]).json()["user"] == me
     t_conn.get_workspace_users(t["workspace_id"])
     t_conn.get_workspace_admins(t["workspace_id"])
     t_conn.get_model_users(t["model_id"])
@@ -46,7 +43,7 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.get_lists(t["model_id"])
     t_conn.get_list(t["model_id"], t["list_id"])
     t_conn.get_list_items(t["model_id"], t["list_id"])
-    t_conn.get_list_items(t["model_id"], t["list_id"], True, apapi.utils.TEXT_CSV)
+    t_conn.get_list_items(t["model_id"], t["list_id"], False, apapi.utils.TEXT_CSV)
     large_list_read = t_conn.start_large_list_read(t["model_id"], t["list_id"]).json()
     large_list_read_id = large_list_read["listReadRequest"]["requestId"]
     while large_list_read["listReadRequest"]["requestState"] != "COMPLETE":
@@ -215,3 +212,13 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
             ).content == t_conn.download_process_dump(
                 t["model_id"], t["process_id"], p_task, result["objectId"]
             )
+
+    # ALM
+    # Online Status
+    t_conn.change_status(t["model_id"], apapi.utils.ModelOnlineStatus.OFFLINE)
+    t_conn.change_status(t["model_id"], apapi.utils.ModelOnlineStatus.ONLINE)
+    # Revisions
+    t_conn.get_revisions(t["model_id"])
+    t_conn.add_revision(t["model_id"], me["lastLoginDate"], "Test revision by APAPI")
+    latest_revision = t_conn.get_latest_revision(t["model_id"]).json()["revisions"][0]
+    t_conn.get_revision_models(t["model_id"], latest_revision["id"])

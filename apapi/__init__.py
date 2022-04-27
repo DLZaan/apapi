@@ -13,6 +13,7 @@ from .__version__ import (
     __copyright__,
 )
 from . import utils
+from .alm import ALMConnection
 from .authentication import AnaplanAuth
 from .basic_connection import BasicConnection
 from .bulk import BulkConnection
