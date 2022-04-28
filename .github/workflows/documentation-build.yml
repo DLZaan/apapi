@@ -16,8 +16,8 @@ jobs:
 
       - run: pip install -e .
       - run: pip install pdoc
-      - run: pdoc apapi -t docs -o docs/
-      - run: tar --directory docs/ -hcf artifact.tar .
+      - run: pdoc apapi -t docs -o docs/site
+      - run: tar --directory docs/site -hcf artifact.tar .
 
       - uses: actions/upload-artifact@v3
         with:
