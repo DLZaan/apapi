@@ -15,7 +15,7 @@ Forecast,-3,😂
 >>>     my_connection.upload_file(model_id, file_id, data)
 >>>     my_connection.run_import(model_id, import_id)
 ```
-Check [tests/test_connection.py](tests/test_connection.py) for more examples and hints about usage.
+Check [tests/test_connection.py](https://github.com/DLZaan/apapi/blob/master/tests/test_connection.py) for more examples and hints about usage.
 
 ## Installing Anaplan Python API and Supported Versions
 
@@ -36,5 +36,5 @@ Contributions are welcome, even if you can't code it - in such case, please subm
 If you encounter any bugs, please report the problem with a description and error log.
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/apapi)
-![PyPI - License](https://img.shields.io/pypi/l/apapi)
+[![PyPI - License](https://img.shields.io/pypi/l/apapi)](https://github.com/DLZaan/apapi/blob/master/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)

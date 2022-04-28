@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
 import os
+
 from setuptools import find_packages, setup
 
-REQUIRES_PYTHON = ">=3.9.0"
-REQUIRES = ["requests>=2.27"]
+REQUIRES_PYTHON = "~=3.9"
 
 here = os.path.abspath(os.path.dirname(__file__))
+
+with open(os.path.join(here, "requirements.txt"), "r", encoding="utf-8") as f:
+    requires = f.readlines()
+
+with open(os.path.join(here, "requirements-dev.txt"), "r", encoding="utf-8") as f:
+    dev_requires = f.readlines()[1:]
 
 about = {}
 with open(os.path.join(here, "apapi", "__version__.py"), "r", encoding="utf-8") as f:
@@ -34,7 +40,10 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     python_requires=REQUIRES_PYTHON,
-    install_requires=REQUIRES,
+    install_requires=requires,
+    extras_require={
+        "dev": dev_requires,
+    },
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",

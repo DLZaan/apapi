@@ -1,0 +1,4 @@
+-r requirements.txt
+black~=22.1
+pdoc~=11.0
+wheel>=0.36
