@@ -2,7 +2,7 @@
 import argparse
 import sys
 
-from apapi import __title__, __description__, __version__
+from apapi import __description__, __title__, __version__
 
 
 def main():

@@ -10,7 +10,7 @@ import json
 from requests import Response
 
 from .basic_connection import BasicConnection
-from .utils import APP_JSON, TEXT_CSV, ExportType, ENCODING_GZIP
+from .utils import APP_JSON, ENCODING_GZIP, TEXT_CSV, ExportType
 
 
 class TransactionalConnection(BasicConnection):

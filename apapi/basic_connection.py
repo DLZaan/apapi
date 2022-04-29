@@ -13,7 +13,7 @@ import time
 from requests import Response, Session
 
 from .authentication import AnaplanAuth
-from .utils import AuthType, AUTH_URL, API_URL, get_generic_session
+from .utils import API_URL, AUTH_URL, AuthType, get_generic_session
 
 
 class BasicConnection:
