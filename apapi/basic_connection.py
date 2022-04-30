@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 apapi.basic_connection
 ~~~~~~~~~~~~~~~~
@@ -12,8 +11,8 @@ import time
 
 from requests import Response, Session
 
-from .authentication import AnaplanAuth
-from .utils import API_URL, AUTH_URL, AuthType, get_generic_session
+from .authentication import AnaplanAuth, AuthType
+from .utils import API_URL, AUTH_URL, get_generic_session
 
 
 class BasicConnection:
@@ -59,25 +58,17 @@ class BasicConnection:
     def authenticate(self) -> None:
         """Acquire Anaplan Authentication Service Token"""
         if self._auth_type == AuthType.BASIC:
-            auth_string = str(
-                base64.b64encode(self._credentials.encode("utf-8")).decode("utf-8")
-            )
-            headers = self.session.headers.copy()
-            headers["Authorization"] = "Basic " + auth_string
-            response = self.session.post(
-                f"{self._auth_url}/token/authenticate",
-                headers=headers,
-                timeout=self.timeout,
-            )
-            if not response.ok:
-                raise Exception("Unable to authenticate", response.text)
-        elif self._auth_type == AuthType.CERT:
+            auth_string = base64.b64encode(self._credentials.encode()).decode()
+        else:  # self._auth_type == AuthType.CERT:
             raise NotImplementedError(
                 "Certificate authentication has not been implemented yet"
             )
-        else:
-            raise Exception("Raise exception - unsupported auth type/wrong format")
-        self._handle_token(response.json()["tokenInfo"])
+        self.session.auth = AnaplanAuth(f"{self._auth_type.value} {auth_string}")
+        self._handle_token(
+            self.request("POST", f"{self._auth_url}/token/authenticate").json()[
+                "tokenInfo"
+            ]
+        )
 
     def refresh_token(self) -> None:
         """Refresh Anaplan Authentication Service Token"""

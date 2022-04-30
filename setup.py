@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 
 from setuptools import find_packages, setup
@@ -7,18 +6,18 @@ REQUIRES_PYTHON = "~=3.9"
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(here, "requirements.txt"), "r", encoding="utf-8") as f:
+with open(os.path.join(here, "requirements.txt"), encoding="utf-8") as f:
     requires = f.readlines()
 
-with open(os.path.join(here, "requirements-dev.txt"), "r", encoding="utf-8") as f:
+with open(os.path.join(here, "requirements-dev.txt"), encoding="utf-8") as f:
     dev_requires = f.readlines()[1:]
 
 about = {}
-with open(os.path.join(here, "apapi", "__version__.py"), "r", encoding="utf-8") as f:
+with open(os.path.join(here, "apapi", "__version__.py"), encoding="utf-8") as f:
     exec(f.read(), about)
 
 try:
-    with open(os.path.join(here, "README.md"), "r", encoding="utf-8") as f:
+    with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
         long_description = "\n" + f.read()
 except FileNotFoundError:
     long_description = about["__description__"]

@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 .. include:: ../README.md
 """
 import logging
 
-from . import utils
+from . import authentication, utils
 from .__version__ import (
     __author__,
     __author_email__,
@@ -15,7 +14,6 @@ from .__version__ import (
     __url__,
     __version__,
 )
-from .authentication import AnaplanAuth
 from .basic_connection import BasicConnection
 from .bulk import BulkConnection
 from .connection import Connection

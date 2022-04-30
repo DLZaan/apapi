@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 apapi.bulk
 ~~~~~~~~~~~~~~~~
@@ -9,7 +8,7 @@ import json
 from requests import Response
 
 from .basic_connection import BasicConnection
-from .utils import APP_8STREAM, APP_GZIP, DEFAULT_DATA
+from .utils import DEFAULT_DATA, MIMEType
 
 
 class BulkConnection(BasicConnection):
@@ -71,15 +70,13 @@ class BulkConnection(BasicConnection):
         file_id: str,
         data: bytes,
         chunk: int,
-        compressed: bool = False,
+        content_type: MIMEType = MIMEType.APP_8STREAM,
     ) -> Response:
-        headers = self.session.headers.copy()
-        headers["Content-Type"] = APP_GZIP if compressed else APP_8STREAM
         return self.request(
             "PUT",
             f"{self._api_main_url}/models/{model_id}/files/{file_id}/chunks/{chunk}",
             data=data,
-            headers=headers,
+            headers=self.session.headers | {"Content-Type": content_type.value},
         )
 
     def set_file_upload_complete(self, model_id: str, file_id: str) -> Response:
@@ -90,22 +87,18 @@ class BulkConnection(BasicConnection):
         )
 
     def upload_file(self, model_id: str, file_id: str, data: bytes) -> Response:
-        headers = self.session.headers.copy()
-        headers["Content-Type"] = APP_8STREAM
         return self.request(
             "PUT",
             f"{self._api_main_url}/models/{model_id}/files/{file_id}",
             data=data,
-            headers=headers,
+            headers=self.session.headers | {"Content-Type": MIMEType.APP_8STREAM.value},
         )
 
     def get_file(self, model_id: str, file_id: str) -> Response:
-        headers = self.session.headers.copy()
-        headers["Accept"] = APP_8STREAM
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/files/{file_id}",
-            headers=headers,
+            headers=self.session.headers | {"Accept": MIMEType.APP_8STREAM.value},
         )
 
     def download_file(self, model_id: str, file_id: str) -> bytes:
@@ -113,8 +106,7 @@ class BulkConnection(BasicConnection):
         response = self.request("GET", url)
         if not response.json()["meta"]["paging"]["currentPageSize"]:
             raise Exception("Missing part in request response", url, response.text)
-        headers = self.session.headers.copy()
-        headers["Accept"] = APP_8STREAM
+        headers = self.session.headers | {"Accept": MIMEType.APP_8STREAM.value}
         return b"".join(
             self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
             for chunk_id in response.json()["chunks"]
@@ -200,12 +192,10 @@ class BulkConnection(BasicConnection):
 
     # Get dump
     def get_import_dump(self, model_id: str, import_id: str, task_id: str) -> Response:
-        headers = self.session.headers.copy()
-        headers["Accept"] = APP_8STREAM
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/imports/{import_id}/tasks/{task_id}/dump",
-            headers=headers,
+            headers=self.session.headers | {"Accept": MIMEType.APP_8STREAM.value},
         )
 
     def download_import_dump(
@@ -215,8 +205,7 @@ class BulkConnection(BasicConnection):
         response = self.request("GET", url)
         if not response.json()["meta"]["paging"]["currentPageSize"]:
             raise Exception("Missing part in request response", url, response.text)
-        headers = self.session.headers.copy()
-        headers["Accept"] = APP_8STREAM
+        headers = self.session.headers | {"Accept": MIMEType.APP_8STREAM.value}
         return b"".join(
             self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
             for chunk_id in response.json()["chunks"]
@@ -225,12 +214,10 @@ class BulkConnection(BasicConnection):
     def get_process_dump(
         self, model_id: str, process_id: str, task_id: str, object_id: str
     ) -> Response:
-        headers = self.session.headers.copy()
-        headers["Accept"] = APP_8STREAM
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/processes/{process_id}/tasks/{task_id}/dumps/{object_id}",
-            headers=headers,
+            headers=self.session.headers | {"Accept": MIMEType.APP_8STREAM.value},
         )
 
     def download_process_dump(
@@ -240,8 +227,7 @@ class BulkConnection(BasicConnection):
         response = self.request("GET", url)
         if not response.json()["meta"]["paging"]["currentPageSize"]:
             raise Exception("Missing part in request response", url, response.text)
-        headers = self.session.headers.copy()
-        headers["Accept"] = APP_8STREAM
+        headers = self.session.headers | {"Accept": MIMEType.APP_8STREAM.value}
         return b"".join(
             self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
             for chunk_id in response.json()["chunks"]

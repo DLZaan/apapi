@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
 import gzip
 import json
 
-import apapi
+from apapi import Connection, utils
 
-with open("tests/test.json", "r") as f:
+with open("tests/test.json") as f:
     t = json.loads(f.read())
 
-with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
+with Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.details = False
     t_conn.compress = True
     # Users
@@ -46,7 +45,7 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.get_lists(t["model_id"])
     t_conn.get_list(t["model_id"], t["list_id"])
     t_conn.get_list_items(t["model_id"], t["list_id"])
-    t_conn.get_list_items(t["model_id"], t["list_id"], True, apapi.utils.TEXT_CSV)
+    t_conn.get_list_items(t["model_id"], t["list_id"], True, utils.MIMEType.TEXT_CSV)
     large_list_read = t_conn.start_large_list_read(t["model_id"], t["list_id"]).json()
     large_list_read_id = large_list_read["listReadRequest"]["requestId"]
     while large_list_read["listReadRequest"]["requestState"] != "COMPLETE":
@@ -117,10 +116,10 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
 
     # Cells
     t_conn.get_cell_data(t["model_id"], module_id)
-    t_conn.get_cell_data(t["model_id"], module_id, apapi.utils.TEXT_CSV)
-    t_conn.get_cell_data(t["model_id"], module_id, apapi.utils.TEXT_CSV_ESCAPED)
+    t_conn.get_cell_data(t["model_id"], module_id, utils.MIMEType.TEXT_CSV)
+    t_conn.get_cell_data(t["model_id"], module_id, utils.MIMEType.TEXT_CSV_ESCAPED)
     large_read = t_conn.start_large_cell_read(
-        t["model_id"], module_id, apapi.utils.ExportType.GRID
+        t["model_id"], module_id, utils.ExportType.GRID
     ).json()
     large_read_id = large_read["viewReadRequest"]["requestId"]
     while large_read["viewReadRequest"]["requestState"] != "COMPLETE":
@@ -176,7 +175,11 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     # WARNING: "7" (instead of "2") is wrong on purpose, to fail task and get dump
     t_conn.upload_file_chunk(t["model_id"], t["file_id"], data[: len(data) // 7], 0)
     t_conn.upload_file_chunk(
-        t["model_id"], t["file_id"], gzip.compress(data[len(data) // 2 :]), 1, True
+        t["model_id"],
+        t["file_id"],
+        gzip.compress(data[len(data) // 2 :]),
+        1,
+        utils.MIMEType.APP_GZIP,
     )
     t_conn.set_file_upload_complete(t["model_id"], t["file_id"])
 
@@ -198,7 +201,7 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.get_process(t["model_id"], t["process_id"])
     # WARNING: incorrect date on purpose, to fail task and get dump
     i_data = f"{t['email']},2022-02-29".encode()
-    mapping = apapi.utils.DEFAULT_DATA.copy()
+    mapping = utils.DEFAULT_DATA.copy()
     mapping["mappingParameters"] = [{"entityType": "Version", "entityName": "Actual"}]
     t_conn.upload_file(t["model_id"], t["file_id_2"], i_data)
     p_task = t_conn.run_process(t["model_id"], t["process_id"], mapping)

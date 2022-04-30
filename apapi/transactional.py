@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 apapi.transactional
 ~~~~~~~~~~~~~~~~
@@ -10,7 +9,7 @@ import json
 from requests import Response
 
 from .basic_connection import BasicConnection
-from .utils import APP_JSON, ENCODING_GZIP, TEXT_CSV, ExportType
+from .utils import ENCODING_GZIP, ExportType, MIMEType
 
 
 class TransactionalConnection(BasicConnection):
@@ -125,18 +124,13 @@ class TransactionalConnection(BasicConnection):
         )
 
     def get_list_items(
-        self, model_id: str, list_id: str, details: bool = None, accept: str = None
+        self, model_id: str, list_id: str, details: bool = None, accept: MIMEType = None
     ) -> Response:
-        if accept:
-            headers = self.session.headers.copy()
-            headers["Accept"] = accept
-        else:
-            headers = None
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/lists/{list_id}/items",
             {"includeAll": self.details if details is None else details},
-            headers=headers,
+            headers=self.session.headers | {"Accept": accept.value} if accept else None,
         )
 
     def start_large_list_read(self, model_id: str, list_id: str) -> Response:
@@ -161,8 +155,7 @@ class TransactionalConnection(BasicConnection):
         page: str,
         compress: bool = None,
     ) -> Response:
-        headers = self.session.headers.copy()
-        headers["Accept"] = TEXT_CSV
+        headers = self.session.headers | {"Accept": MIMEType.TEXT_CSV.value}
         if compress or (compress is None and self.compress):
             headers["Accept-Encoding"] = ENCODING_GZIP
         return self.request(
@@ -294,15 +287,19 @@ class TransactionalConnection(BasicConnection):
 
     # Cells
     def get_cell_data(
-        self, model_id: str, view_id: str, accept: str = None, pages: dict[str] = None
+        self,
+        model_id: str,
+        view_id: str,
+        accept: MIMEType = None,
+        pages: dict[str] = None,
     ) -> Response:
         headers = self.session.headers.copy()
         if accept:
-            headers["Accept"] = accept
+            headers["Accept"] = accept.value
         params = {}
         if pages:
             params["pages"] = pages
-        if headers["Accept"] == APP_JSON:
+        if headers["Accept"] == MIMEType.APP_JSON.value:
             params["format"] = "v1"
         return self.request(
             "GET",
@@ -336,8 +333,7 @@ class TransactionalConnection(BasicConnection):
         page: str,
         compress: bool = None,
     ) -> Response:
-        headers = self.session.headers.copy()
-        headers["Accept"] = TEXT_CSV
+        headers = self.session.headers | {"Accept": MIMEType.TEXT_CSV.value}
         if compress or (compress is None and self.compress):
             headers["Accept-Encoding"] = ENCODING_GZIP
         return self.request(

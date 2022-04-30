@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 __title__ = "apapi"
 __description__ = "Unofficial Anaplan API Python client library"
 __url__ = "https://github.com/DLZaan/apapi"
