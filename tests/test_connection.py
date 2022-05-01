@@ -218,7 +218,23 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.change_status(t["model_id"], apapi.utils.ModelOnlineStatus.OFFLINE)
     t_conn.change_status(t["model_id"], apapi.utils.ModelOnlineStatus.ONLINE)
     # Revisions
-    t_conn.get_revisions(t["model_id"])
-    t_conn.add_revision(t["model_id"], me["lastLoginDate"], "Test revision by APAPI")
-    latest_revision = t_conn.get_latest_revision(t["model_id"]).json()["revisions"][0]
-    t_conn.get_revision_models(t["model_id"], latest_revision["id"])
+    previous_revision = t_conn.get_latest_revision(t["model_id"]).json()["revisions"][0]
+    new_revision = t_conn.add_revision(
+        t["model_id"], me["lastLoginDate"], "Test revision by APAPI"
+    ).json()["revision"]
+    revisions = t_conn.get_revisions(t["model_id"]).json()["revisions"]
+    syncable_revisions = t_conn.get_syncable_revisions(
+        t["model_id"], t["model_id_2"]
+    ).json()["revisions"]
+    assert (
+        new_revision == syncable_revisions[-1]
+        and new_revision["id"] == revisions[-1]["id"]
+        and previous_revision["id"] == revisions[-2]["id"]
+    )
+    t_conn.get_revision_models(t["model_id"], previous_revision["id"])
+    # Sync models
+    sync = t_conn.sync(
+        t["model_id"], new_revision["id"], t["model_id_2"], previous_revision["id"]
+    ).json()["task"]["taskId"]
+    assert t_conn.get_syncs(t["model_id_2"]).json()["tasks"][-1]["taskId"] == sync
+    assert t_conn.get_sync(t["model_id_2"], sync).json()["task"]["result"]["successful"]
