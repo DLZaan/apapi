@@ -201,10 +201,8 @@ with Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.get_process(t["model_id"], t["process_id"])
     # WARNING: incorrect date on purpose, to fail task and get dump
     i_data = f"{t['email']},2022-02-29".encode()
-    mapping = utils.DEFAULT_DATA.copy()
-    mapping["mappingParameters"] = [{"entityType": "Version", "entityName": "Actual"}]
     t_conn.upload_file(t["model_id"], t["file_id_2"], i_data)
-    p_task = t_conn.run_process(t["model_id"], t["process_id"], mapping)
+    p_task = t_conn.run_process(t["model_id"], t["process_id"], {"Version": "Actual"})
     p_task = p_task.json()["task"]["taskId"]
     assert contains(t_conn.get_process_tasks(t["model_id"], t["process_id"]), p_task)
     while doing(

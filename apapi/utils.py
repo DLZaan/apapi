@@ -15,18 +15,18 @@ from .__version__ import __title__, __version__
 
 
 class ExportType(Enum):
-    """Needed for large cell view read to choose which format should be used"""
+    """Needed for large cell view read to choose which format should be used."""
 
     GRID = "GRID_ALL_PAGES"
-    """Separate table for each page, keeps sorting and filtering of the original view"""
+    """Each page in separate table, keeps sorting and filtering of the original view."""
     TABULAR_SINGLE = "TABULAR_SINGLE_COLUMN"
-    """All dimensions are put in columns, and data is in the final column"""
+    """All dimensions are put in columns, and data is in the final column."""
     TABULAR_MULTI = "TABULAR_MULTI_COLUMN"
-    """All pages dimensions are moved to columns, and allows for Boolean filter"""
+    """All pages dimensions are moved to columns, and allows for Boolean filter."""
 
 
 class MIMEType(Enum):
-    """Different media types used within Anaplan APIs to indicate the format of data"""
+    """Different media types used within Anaplan APIs to indicate the format of data."""
 
     APP_JSON = "application/json"
     APP_8STREAM = "application/octet-stream"
@@ -36,7 +36,7 @@ class MIMEType(Enum):
 
 
 def get_generic_session(retry_count: int = 3) -> Session:
-    """Returns default session: headers & adapter (with given retry count) mounted"""
+    """Returns default session: headers & adapter (with given retry count) mounted."""
     adapter = HTTPAdapter(
         max_retries=Retry(
             total=retry_count,
@@ -52,19 +52,19 @@ def get_generic_session(retry_count: int = 3) -> Session:
 
 
 AUTH_URL = "https://auth.anaplan.com"
-"""Default Anaplan API Authentication base URL"""
+"""Default Anaplan API Authentication base URL."""
 API_URL = "https://api.anaplan.com"
-"""Default Anaplan API base URL for most services"""
+"""Default Anaplan API base URL for most services."""
 
 USER_AGENT = f"{__title__}/{__version__}"
-"""User-Agent info that should be send with each request for statistical purpose"""
+"""User-Agent info that should be send with each request for statistical purpose."""
 
 DEFAULT_HEADERS = {
     "Content-Type": MIMEType.APP_JSON.value,
     "Accept": MIMEType.APP_JSON.value,
     "User-Agent": USER_AGENT,
 }
-"""Default session headers used for most of API calls"""
+"""Default session headers used for most of API calls."""
 DEFAULT_DATA = {"localeName": "en_US"}
-"""Default post data for bulk actions"""
+"""Default post data for bulk actions."""
 ENCODING_GZIP = "gzip,deflate"

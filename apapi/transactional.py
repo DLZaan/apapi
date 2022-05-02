@@ -1,7 +1,7 @@
 """
 apapi.transactional
 ~~~~~~~~~~~~~~~~
-Child of Basic Connection class, responsible for Transactional API capabilities
+Child of Basic Connection class, responsible for Transactional API capabilities.
 """
 
 import json

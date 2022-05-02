@@ -1,7 +1,7 @@
 """
 apapi.authentication
 ~~~~~~~~~~~~~~~~
-This module provides helper classes for authentication needs
+This module provides helper classes for authentication needs.
 """
 from enum import Enum
 
@@ -20,10 +20,9 @@ class AnaplanAuth(AuthBase):
 
 
 class AuthType(Enum):
-    """Needed during initialization of connection to choose
-    which authentication option should be used"""
+    """Authentication options used during initialization of connection to Anaplan."""
 
     BASIC = "Basic"
-    """Basic Authentication using username (email) and Anaplan password"""
+    """Basic Authentication using username (email) and Anaplan password."""
     CERT = "CACertificate"
-    """NOT IMPLEMENTED YET Certificate Authentication using S/MIME certificate"""
+    """NOT IMPLEMENTED YET Certificate Authentication using S/MIME certificate."""

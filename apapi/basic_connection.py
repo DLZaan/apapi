@@ -2,7 +2,7 @@
 apapi.basic_connection
 ~~~~~~~~~~~~~~~~
 This module provides a Basic Connection class,
-which should be used to connect to Anaplan APIs
+which should be used to connect to Anaplan APIs.
 """
 
 import base64
@@ -26,7 +26,7 @@ class BasicConnection:
         auth_url: str = AUTH_URL,
         api_url: str = API_URL,
     ):
-        """Initialize Connection and try to authenticate"""
+        """Initialize Connection and try to authenticate."""
         self._credentials = credentials
         self._auth_type = auth_type
         self._auth_url = auth_url
@@ -56,7 +56,7 @@ class BasicConnection:
         self._timer.start()
 
     def authenticate(self) -> None:
-        """Acquire Anaplan Authentication Service Token"""
+        """Acquire Anaplan Authentication Service Token."""
         if self._auth_type == AuthType.BASIC:
             auth_string = base64.b64encode(self._credentials.encode()).decode()
         else:  # self._auth_type == AuthType.CERT:
@@ -71,7 +71,7 @@ class BasicConnection:
         )
 
     def refresh_token(self) -> None:
-        """Refresh Anaplan Authentication Service Token"""
+        """Refresh Anaplan Authentication Service Token."""
         # skip if other thread is already taking care of refreshing the token
         if not self._lock.locked():
             with self._lock:
@@ -84,7 +84,7 @@ class BasicConnection:
                 self._handle_token(response.json()["tokenInfo"])
 
     def close(self) -> None:
-        """Logout from Anaplan Authentication Service"""
+        """Logout from Anaplan Authentication Service."""
         self._timer.cancel()
         self.session.post(f"{self._auth_url}/token/logout", timeout=self.timeout)
         self.session.close()
@@ -92,7 +92,7 @@ class BasicConnection:
     def request(
         self, method: str, url: str, params: dict = None, data=None, headers=None
     ) -> Response:
-        """Default wrapper of session's request method"""
+        """Default wrapper of session's request method."""
         if headers:
             response = self.session.request(
                 method, url, params, data, timeout=self.timeout, headers=headers
