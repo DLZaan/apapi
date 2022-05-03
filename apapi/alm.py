@@ -10,7 +10,7 @@ import json
 from requests import Response
 
 from .basic_connection import BasicConnection
-from .utils import ModelOnlineStatus
+from .utils import ModelOnlineStatus, APP_8STREAM
 
 
 class ALMConnection(BasicConnection):
@@ -55,6 +55,41 @@ class ALMConnection(BasicConnection):
             "POST",
             f"{self._api_main_url}/models/{model_id}/alm/revisions",
             data=json.dumps({"name": name, "description": description}),
+        )
+
+    # Revisions comparison
+    def start_revisions_comparison(
+        self,
+        source_model_id: str,
+        source_revision_id: str,
+        target_model_id: str,
+        target_revision_id: str,
+    ) -> Response:
+        return self.request(
+            "POST",
+            f"{self._api_main_url}/models/{target_model_id}/alm/comparisonReportTasks",
+            data=json.dumps(
+                {
+                    "sourceModelId": source_model_id,
+                    "sourceRevisionId": source_revision_id,
+                    "targetRevisionId": target_revision_id,
+                }
+            ),
+        )
+
+    def get_revisions_comparison_status(self, model_id: str, task_id: str):
+        return self.request(
+            "GET",
+            f"{self._api_main_url}/models/{model_id}/alm/comparisonReportTasks/{task_id}",
+        )
+
+    def get_revisions_comparison_data(
+        self, source_revision_id: str, target_model_id: str, target_revision_id: str
+    ) -> Response:
+        return self.request(
+            "GET",
+            f"{self._api_main_url}/models/{target_model_id}/alm/comparisonReports/{target_revision_id}/{source_revision_id}",
+            headers=self.session.headers | {"Accept": APP_8STREAM},
         )
 
     # Sync models

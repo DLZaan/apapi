@@ -232,6 +232,15 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
         and previous_revision["id"] == revisions[-2]["id"]
     )
     t_conn.get_revision_models(t["model_id"], previous_revision["id"])
+    # Revisions comparison
+    comparison_id = t_conn.start_revisions_comparison(
+        t["model_id"], revisions[-1]["id"], t["model_id_2"], revisions[-2]["id"]
+    ).json()["task"]["taskId"]
+    while doing(t_conn.get_revisions_comparison_status(t["model_id_2"], comparison_id)):
+        pass
+    t_conn.get_revisions_comparison_data(
+        revisions[-1]["id"], t["model_id_2"], revisions[-2]["id"]
+    )
     # Sync models
     sync = t_conn.sync(
         t["model_id"], new_revision["id"], t["model_id_2"], previous_revision["id"]
