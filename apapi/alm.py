@@ -92,6 +92,40 @@ class ALMConnection(BasicConnection):
             headers=self.session.headers | {"Accept": APP_8STREAM},
         )
 
+    # Revisions comparison summary
+    def start_revisions_summary(
+        self,
+        source_model_id: str,
+        source_revision_id: str,
+        target_model_id: str,
+        target_revision_id: str,
+    ) -> Response:
+        return self.request(
+            "POST",
+            f"{self._api_main_url}/models/{target_model_id}/alm/summaryReportTasks",
+            data=json.dumps(
+                {
+                    "sourceModelId": source_model_id,
+                    "sourceRevisionId": source_revision_id,
+                    "targetRevisionId": target_revision_id,
+                }
+            ),
+        )
+
+    def get_revisions_summary_status(self, model_id: str, task_id: str):
+        return self.request(
+            "GET",
+            f"{self._api_main_url}/models/{model_id}/alm/summaryReportTasks/{task_id}",
+        )
+
+    def get_revisions_summary_data(
+        self, source_revision_id: str, target_model_id: str, target_revision_id: str
+    ) -> Response:
+        return self.request(
+            "GET",
+            f"{self._api_main_url}/models/{target_model_id}/alm/summaryReports/{target_revision_id}/{source_revision_id}",
+        )
+
     # Sync models
     def get_syncs(self, model_id: str) -> Response:
         return self.request(

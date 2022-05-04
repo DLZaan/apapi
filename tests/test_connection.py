@@ -241,6 +241,15 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.get_revisions_comparison_data(
         revisions[-1]["id"], t["model_id_2"], revisions[-2]["id"]
     )
+    # Revisions comparison summary
+    comparison_id = t_conn.start_revisions_summary(
+        t["model_id"], revisions[-1]["id"], t["model_id_2"], revisions[-2]["id"]
+    ).json()["task"]["taskId"]
+    while doing(t_conn.get_revisions_summary_status(t["model_id_2"], comparison_id)):
+        pass
+    t_conn.get_revisions_summary_data(
+        revisions[-1]["id"], t["model_id_2"], revisions[-2]["id"]
+    )
     # Sync models
     sync = t_conn.sync(
         t["model_id"], new_revision["id"], t["model_id_2"], previous_revision["id"]
