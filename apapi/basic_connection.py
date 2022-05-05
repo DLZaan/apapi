@@ -35,9 +35,14 @@ class BasicConnection:
         self._lock = threading.Lock()
 
         self.details: bool = True
+        """Used as default for "details" argument for some functions."""
         self.compress: bool = True
+        """Used as default for "compress" argument for some functions."""
         self.timeout: float = 3.5
+        """Timeout (in seconds) of all requests exchanged with Anaplan API."""
         self.session: Session = session
+        """Session holding headers (including authentication token) and adapters
+        used for communication with all Anaplan API endpoints."""
 
         self.authenticate()
 
