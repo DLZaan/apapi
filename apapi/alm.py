@@ -18,6 +18,7 @@ class ALMConnection(BasicConnection):
 
     # Online Status
     def change_status(self, model_id: str, status: ModelOnlineStatus) -> Response:
+        """Set online status of a specified model."""
         return self.request(
             "PUT",
             f"{self._api_main_url}/models/{model_id}/onlineStatus",
@@ -26,11 +27,13 @@ class ALMConnection(BasicConnection):
 
     # Revisions
     def get_revisions(self, model_id: str) -> Response:
+        """Get all available revision tags for a specified model."""
         return self.request(
             "GET", f"{self._api_main_url}/models/{model_id}/alm/revisions"
         )
 
     def get_latest_revision(self, model_id: str) -> Response:
+        """Get last created revision tag for a specified model."""
         return self.request(
             "GET", f"{self._api_main_url}/models/{model_id}/alm/latestRevision"
         )
@@ -38,6 +41,7 @@ class ALMConnection(BasicConnection):
     def get_syncable_revisions(
         self, source_model_id: str, target_model_id: str
     ) -> Response:
+        """Get all revision tags that can be synchronized between specified models."""
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{target_model_id}/alm/syncableRevisions",
@@ -45,12 +49,14 @@ class ALMConnection(BasicConnection):
         )
 
     def get_revision_models(self, model_id: str, revision_id: str) -> Response:
+        """Get all models that have a specified revision tag applied."""
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/alm/revisions/{revision_id}/appliedToModels",
         )
 
     def add_revision(self, model_id: str, name: str, description: str) -> Response:
+        """Add a revision tag wit given details to a specified model."""
         return self.request(
             "POST",
             f"{self._api_main_url}/models/{model_id}/alm/revisions",
@@ -65,6 +71,7 @@ class ALMConnection(BasicConnection):
         target_model_id: str,
         target_revision_id: str,
     ) -> Response:
+        """Start a revision tags' detailed comparison task."""
         return self.request(
             "POST",
             f"{self._api_main_url}/models/{target_model_id}/alm/comparisonReportTasks",
@@ -78,6 +85,7 @@ class ALMConnection(BasicConnection):
         )
 
     def get_revisions_comparison_status(self, model_id: str, task_id: str):
+        """Get the status of a revision tags' detailed comparison task."""
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/alm/comparisonReportTasks/{task_id}",
@@ -86,6 +94,7 @@ class ALMConnection(BasicConnection):
     def get_revisions_comparison_data(
         self, source_revision_id: str, target_model_id: str, target_revision_id: str
     ) -> Response:
+        """Get a revision tags' detailed comparison data."""
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{target_model_id}/alm/comparisonReports/{target_revision_id}/{source_revision_id}",
@@ -100,6 +109,7 @@ class ALMConnection(BasicConnection):
         target_model_id: str,
         target_revision_id: str,
     ) -> Response:
+        """Start a revision tags' summary comparison task."""
         return self.request(
             "POST",
             f"{self._api_main_url}/models/{target_model_id}/alm/summaryReportTasks",
@@ -113,6 +123,7 @@ class ALMConnection(BasicConnection):
         )
 
     def get_revisions_summary_status(self, model_id: str, task_id: str):
+        """Get the status of a revision tags' summary comparison task."""
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/alm/summaryReportTasks/{task_id}",
@@ -121,6 +132,7 @@ class ALMConnection(BasicConnection):
     def get_revisions_summary_data(
         self, source_revision_id: str, target_model_id: str, target_revision_id: str
     ) -> Response:
+        """Get a revision tags' summary comparison data."""
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{target_model_id}/alm/summaryReports/{target_revision_id}/{source_revision_id}",
@@ -128,11 +140,13 @@ class ALMConnection(BasicConnection):
 
     # Sync models
     def get_syncs(self, model_id: str) -> Response:
+        """Get synchronization tasks for the last 48 hours for a specified model."""
         return self.request(
             "GET", f"{self._api_main_url}/models/{model_id}/alm/syncTasks"
         )
 
     def get_sync(self, model_id: str, sync_id: str) -> Response:
+        """Get the status of a specified synchronization task."""
         return self.request(
             "GET", f"{self._api_main_url}/models/{model_id}/alm/syncTasks/{sync_id}"
         )
@@ -144,6 +158,7 @@ class ALMConnection(BasicConnection):
         target_model_id: str,
         target_revision_id: str,
     ) -> Response:
+        """Run a synchronization task between two models for given revision tags."""
         return self.request(
             "POST",
             f"{self._api_main_url}/models/{target_model_id}/alm/syncTasks",
