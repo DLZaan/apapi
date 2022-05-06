@@ -14,6 +14,7 @@ from .__version__ import (
     __url__,
     __version__,
 )
+from .alm import ALMConnection
 from .basic_connection import BasicConnection
 from .bulk import BulkConnection
 from .connection import Connection
