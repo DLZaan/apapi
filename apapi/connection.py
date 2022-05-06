@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 """
-apapi.full_connection
+apapi.connection
 ~~~~~~~~~~~~~~~~
-This module provides Connection class, which contains all available API functions
+This module provides Connection class, which contains all available API functions.
 """
 
 from .bulk import BulkConnection

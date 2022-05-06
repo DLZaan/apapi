@@ -1,0 +1,7 @@
+[tool.isort]
+profile="black"
+py_version=39
+virtual_env="venv"
+skip_gitignore=true
+honor_noqa=true
+color_output=true

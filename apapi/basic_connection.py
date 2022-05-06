@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 """
 apapi.basic_connection
 ~~~~~~~~~~~~~~~~
 This module provides a Basic Connection class,
-which should be used to connect to Anaplan APIs
+which should be used to connect to Anaplan APIs.
 """
 
 import base64
@@ -12,8 +11,8 @@ import time
 
 from requests import Response, Session
 
-from .authentication import AnaplanAuth
-from .utils import AuthType, AUTH_URL, API_URL, get_generic_session
+from .authentication import AnaplanAuth, AuthType
+from .utils import API_URL, AUTH_URL, get_generic_session
 
 
 class BasicConnection:
@@ -27,7 +26,7 @@ class BasicConnection:
         auth_url: str = AUTH_URL,
         api_url: str = API_URL,
     ):
-
+        """Initialize Connection and try to authenticate."""
         self._credentials = credentials
         self._auth_type = auth_type
         self._auth_url = auth_url
@@ -36,9 +35,14 @@ class BasicConnection:
         self._lock = threading.Lock()
 
         self.details: bool = True
+        """Used as default for "details" argument for some functions."""
         self.compress: bool = True
+        """Used as default for "compress" argument for some functions."""
         self.timeout: float = 3.5
+        """Timeout (in seconds) of all requests exchanged with Anaplan API."""
         self.session: Session = session
+        """Session holding headers (including authentication token) and adapters
+        used for communication with all Anaplan API endpoints."""
 
         self.authenticate()
 
@@ -57,30 +61,22 @@ class BasicConnection:
         self._timer.start()
 
     def authenticate(self) -> None:
-        """Acquire Anaplan Authentication Service Token"""
+        """Acquire Anaplan Authentication Service Token."""
         if self._auth_type == AuthType.BASIC:
-            auth_string = str(
-                base64.b64encode(self._credentials.encode("utf-8")).decode("utf-8")
-            )
-            headers = self.session.headers.copy()
-            headers["Authorization"] = "Basic " + auth_string
-            response = self.session.post(
-                f"{self._auth_url}/token/authenticate",
-                headers=headers,
-                timeout=self.timeout,
-            )
-            if not response.ok:
-                raise Exception("Unable to authenticate", response.text)
-        elif self._auth_type == AuthType.CERT:
+            auth_string = base64.b64encode(self._credentials.encode()).decode()
+        else:  # self._auth_type == AuthType.CERT:
             raise NotImplementedError(
                 "Certificate authentication has not been implemented yet"
             )
-        else:
-            raise Exception("Raise exception - unsupported auth type/wrong format")
-        self._handle_token(response.json()["tokenInfo"])
+        self.session.auth = AnaplanAuth(f"{self._auth_type.value} {auth_string}")
+        self._handle_token(
+            self.request("POST", f"{self._auth_url}/token/authenticate").json()[
+                "tokenInfo"
+            ]
+        )
 
     def refresh_token(self) -> None:
-        """Refresh Anaplan Authentication Service Token"""
+        """Refresh Anaplan Authentication Service Token."""
         # skip if other thread is already taking care of refreshing the token
         if not self._lock.locked():
             with self._lock:
@@ -88,12 +84,12 @@ class BasicConnection:
                     f"{self._auth_url}/token/refresh", timeout=self.timeout
                 )
                 if not response.ok:
-                    raise Exception("Unable to refresh the token", response.text)
+                    self.authenticate()
                 self._timer.cancel()
                 self._handle_token(response.json()["tokenInfo"])
 
     def close(self) -> None:
-        """Logout from Anaplan Authentication Service"""
+        """Logout from Anaplan Authentication Service."""
         self._timer.cancel()
         self.session.post(f"{self._auth_url}/token/logout", timeout=self.timeout)
         self.session.close()
@@ -101,7 +97,7 @@ class BasicConnection:
     def request(
         self, method: str, url: str, params: dict = None, data=None, headers=None
     ) -> Response:
-        """Default wrapper of session's request method"""
+        """Default wrapper of session's request method."""
         if headers:
             response = self.session.request(
                 method, url, params, data, timeout=self.timeout, headers=headers
