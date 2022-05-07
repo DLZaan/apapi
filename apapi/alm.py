@@ -1,6 +1,6 @@
 """
 apapi.alm
-~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Child of Basic Connection class, responsible for
 Application Lifecycle Management API capabilities
 """
@@ -32,7 +32,7 @@ class ALMConnection(BasicConnection):
         )
 
     def get_latest_revision(self, model_id: str) -> Response:
-        """Get last created revision tag for a specified model."""
+        """Get the most recently applied revision tag for a specified model."""
         return self.request(
             "GET", f"{self._api_main_url}/models/{model_id}/alm/latestRevision"
         )
@@ -97,7 +97,7 @@ class ALMConnection(BasicConnection):
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{target_model_id}/alm/comparisonReports/{target_revision_id}/{source_revision_id}",
-            headers=self.session.headers | {"Accept": MIMEType.APP_8STREAM.value},
+            headers={"Accept": MIMEType.APP_8STREAM.value},
         )
 
     # Revisions comparison summary

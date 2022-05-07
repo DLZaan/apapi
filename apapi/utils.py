@@ -1,11 +1,12 @@
 """
 apapi.utils
-~~~~~~~~~~~
+
 This module provides utility classes, functions & constants that are used within APAPI,
 and might be useful for external consumption as well.
 """
 
 from enum import Enum
+from typing import Final
 
 from requests import Session
 from requests.adapters import HTTPAdapter
@@ -58,20 +59,20 @@ def get_generic_session(retry_count: int = 3) -> Session:
     return session
 
 
-AUTH_URL = "https://auth.anaplan.com"
+AUTH_URL: Final[str] = "https://auth.anaplan.com"
 """Default Anaplan API Authentication base URL."""
-API_URL = "https://api.anaplan.com"
+API_URL: Final[str] = "https://api.anaplan.com"
 """Default Anaplan API base URL for most services."""
 
-USER_AGENT = f"{__title__}/{__version__}"
+USER_AGENT: Final[str] = f"{__title__}/{__version__}"
 """User-Agent info that should be send with each request for statistical purpose."""
 
-DEFAULT_HEADERS = {
+DEFAULT_HEADERS: Final[dict] = {
     "Content-Type": MIMEType.APP_JSON.value,
     "Accept": MIMEType.APP_JSON.value,
     "User-Agent": USER_AGENT,
 }
 """Default session headers used for most of API calls."""
-DEFAULT_DATA = {"localeName": "en_US"}
+DEFAULT_DATA: Final[dict] = {"localeName": "en_US"}
 """Default post data for bulk actions."""
-ENCODING_GZIP = "gzip,deflate"
+ENCODING_GZIP: Final[str] = "gzip,deflate"

@@ -1,6 +1,6 @@
 """
 apapi.authentication
-~~~~~~~~~~~~~~~~
+
 This module provides helper classes for authentication needs.
 """
 from enum import Enum

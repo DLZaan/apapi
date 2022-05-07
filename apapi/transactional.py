@@ -1,6 +1,6 @@
 """
 apapi.transactional
-~~~~~~~~~~~~~~~~
+
 Child of Basic Connection class, responsible for Transactional API capabilities.
 """
 
@@ -65,6 +65,10 @@ class TransactionalConnection(BasicConnection):
             {"tenantDetails": self.details if details is None else details},
         )
 
+    def get_user_workspaces(self, user_id: str) -> Response:
+        """Get info about all workspaces to which a specified user has access."""
+        return self.request("GET", f"{self._api_main_url}/users/{user_id}/workspaces")
+
     # Models
     def get_models(self, details: bool = None) -> Response:
         """Get info about all models in the tenant."""
@@ -89,6 +93,10 @@ class TransactionalConnection(BasicConnection):
             f"{self._api_main_url}/models/{model_id}",
             {"modelDetails": self.details if details is None else details},
         )
+
+    def get_user_models(self, user_id: str) -> Response:
+        """Get info about all models to which a specified user has access."""
+        return self.request("GET", f"{self._api_main_url}/users/{user_id}/models")
 
     # Calendar
     def get_fiscal_year(self, model_id: str):
@@ -158,7 +166,7 @@ class TransactionalConnection(BasicConnection):
             "GET",
             f"{self._api_main_url}/models/{model_id}/lists/{list_id}/items",
             {"includeAll": self.details if details is None else details},
-            headers=self.session.headers | {"Accept": accept.value} if accept else None,
+            headers={"Accept": accept.value} if accept else None,
         )
 
     def start_large_list_read(self, model_id: str, list_id: str) -> Response:
@@ -195,7 +203,7 @@ class TransactionalConnection(BasicConnection):
         If there are i.e. 10 available pages, it means that pages from 0 to 9 are ready.
         You can clean after read using TransactionalConnection.delete_large_list_read().
         """
-        headers = self.session.headers | {"Accept": MIMEType.TEXT_CSV.value}
+        headers = {"Accept": MIMEType.TEXT_CSV.value}
         if compress or (compress is None and self.compress):
             headers["Accept-Encoding"] = ENCODING_GZIP
         return self.request(
@@ -381,9 +389,7 @@ class TransactionalConnection(BasicConnection):
         More information about this endpoint can be found in the official Anaplan
         [API documentation](https://anaplanbulkapi20.docs.apiary.io/#RetrieveCellDataView).
         """
-        headers = self.session.headers.copy()
-        if accept:
-            headers["Accept"] = accept.value
+        headers = {"Accept": accept.value if accept else self.session.headers["Accept"]}
         params = {}
         if pages:
             params["pages"] = ",".join(pages)
@@ -436,7 +442,7 @@ class TransactionalConnection(BasicConnection):
         If there are i.e. 10 available pages, it means that pages from 0 to 9 are ready.
         You can clean after read using TransactionalConnection.delete_large_cell_read().
         """
-        headers = self.session.headers | {"Accept": MIMEType.TEXT_CSV.value}
+        headers = {"Accept": MIMEType.TEXT_CSV.value}
         if compress or (compress is None and self.compress):
             headers["Accept-Encoding"] = ENCODING_GZIP
         return self.request(

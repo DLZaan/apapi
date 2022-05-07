@@ -1,11 +1,12 @@
 """
 apapi.basic_connection
-~~~~~~~~~~~~~~~~
+
 This module provides a Basic Connection class,
 which should be used to connect to Anaplan APIs.
 """
 
 import base64
+import logging
 import threading
 import time
 
@@ -27,12 +28,12 @@ class BasicConnection:
         api_url: str = API_URL,
     ):
         """Initialize Connection and try to authenticate."""
-        self._credentials = credentials
-        self._auth_type = auth_type
-        self._auth_url = auth_url
-        self._api_main_url = f"{api_url}/2/0"
-        self._timer = None
-        self._lock = threading.Lock()
+        self._credentials: str = credentials
+        self._auth_type: AuthType = auth_type
+        self._auth_url: str = auth_url
+        self._api_main_url: str = f"{api_url}/2/0"
+        self._timer: threading.Timer
+        self._lock: threading.Lock = threading.Lock()
 
         self.details: bool = True
         """Used as default for "details" argument for some functions."""
@@ -80,32 +81,32 @@ class BasicConnection:
         # skip if other thread is already taking care of refreshing the token
         if not self._lock.locked():
             with self._lock:
-                response = self.session.post(
-                    f"{self._auth_url}/token/refresh", timeout=self.timeout
-                )
-                if not response.ok:
+                try:
+                    response = self.request("POST", f"{self._auth_url}/token/refresh")
+                except Exception:
                     self.authenticate()
                 self._timer.cancel()
                 self._handle_token(response.json()["tokenInfo"])
 
     def close(self) -> None:
         """Logout from Anaplan Authentication Service."""
-        self._timer.cancel()
-        self.session.post(f"{self._auth_url}/token/logout", timeout=self.timeout)
-        self.session.close()
+        try:
+            self._timer.cancel()
+            self.request("POST", f"{self._auth_url}/token/logout")
+        finally:
+            self.session.close()
 
     def request(
         self, method: str, url: str, params: dict = None, data=None, headers=None
     ) -> Response:
         """Default wrapper of session's request method."""
-        if headers:
-            response = self.session.request(
-                method, url, params, data, timeout=self.timeout, headers=headers
-            )
-        else:
-            response = self.session.request(
-                method, url, params, data, timeout=self.timeout
-            )
+        logging.info(f"{method}\t{url}")
+        response = self.session.request(
+            method, url, params, data, headers, timeout=self.timeout
+        )
         if not response.ok:
+            logging.error(
+                f"{method} failed with {response.status_code}\t{url}\t{response.content}"
+            )
             raise Exception("Request failed", url, response.text)
         return response

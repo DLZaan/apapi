@@ -1,7 +1,14 @@
 import gzip
 import json
+import logging
 
 from apapi import Connection, utils
+
+logging.basicConfig(
+    format="%(asctime)s\t%(levelname)s\t%(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    level=logging.INFO,
+)
 
 with open("tests/test.json") as f:
     t = json.loads(f.read())
@@ -23,12 +30,15 @@ with Connection(f"{t['email']}:{t['password']}") as t_conn:
     # Workspaces
     t_conn.get_workspaces()
     t_conn.get_workspace(t["workspace_id"])
+    t_conn.get_user_workspaces(me["id"])
 
     # Models
     t_conn.get_models()
     t_conn.get_workspace_models(t["workspace_id"])
     t_conn.get_model(t["model_id"])
+    t_conn.get_user_models(me["id"])
 
+    # here we start working with a model, so it can take a few seconds to load it
     # Calendar
     t_conn.get_fiscal_year(t["model_id"])
     t_conn.set_fiscal_year(t["model_id"], "FY22")

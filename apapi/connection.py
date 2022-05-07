@@ -1,6 +1,6 @@
 """
 apapi.connection
-~~~~~~~~~~~~~~~~
+
 This module provides Connection class, which contains all available API functions.
 """
 

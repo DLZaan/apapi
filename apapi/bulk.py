@@ -1,6 +1,6 @@
 """
 apapi.bulk
-~~~~~~~~~~~~~~~~
+
 Child of Basic Connection class, responsible for Bulk API capabilities
 """
 import json
@@ -76,7 +76,7 @@ class BulkConnection(BasicConnection):
             "PUT",
             f"{self._api_main_url}/models/{model_id}/files/{file_id}",
             data=data,
-            headers=self.session.headers | {"Content-Type": MIMEType.APP_8STREAM.value},
+            headers={"Content-Type": MIMEType.APP_8STREAM.value},
         )
 
     def set_file_chunk_count(self, model_id: str, file_id: str, count: int) -> Response:
@@ -104,7 +104,7 @@ class BulkConnection(BasicConnection):
             "PUT",
             f"{self._api_main_url}/models/{model_id}/files/{file_id}/chunks/{chunk}",
             data=data,
-            headers=self.session.headers | {"Content-Type": content_type.value},
+            headers={"Content-Type": content_type.value},
         )
 
     def set_file_upload_complete(self, model_id: str, file_id: str) -> Response:
@@ -124,7 +124,7 @@ class BulkConnection(BasicConnection):
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/files/{file_id}",
-            headers=self.session.headers | {"Accept": MIMEType.APP_8STREAM.value},
+            headers={"Accept": MIMEType.APP_8STREAM.value},
         )
 
     def download_file(self, model_id: str, file_id: str) -> bytes:
@@ -137,9 +137,12 @@ class BulkConnection(BasicConnection):
         response = self.request("GET", url)
         if not response.json()["meta"]["paging"]["currentPageSize"]:
             raise Exception("Missing part in request response", url, response.text)
-        headers = self.session.headers | {"Accept": MIMEType.APP_8STREAM.value}
         return b"".join(
-            self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
+            self.request(
+                "GET",
+                f"{url}/{chunk_id['id']}",
+                headers={"Accept": MIMEType.APP_8STREAM.value},
+            ).content
             for chunk_id in response.json()["chunks"]
         )
 
@@ -161,7 +164,7 @@ class BulkConnection(BasicConnection):
         """Run an action of given type.
 
         Data parameter should be provided only for imports with mapping,
-        and processes that contain such imports.It should be dict of key-value pairs
+        and processes that contain such imports. It should be dict of key-value pairs
         of dimension & item that need to be applied to the execution of such action.
         """
         mapping = DEFAULT_DATA.copy()
@@ -275,7 +278,7 @@ class BulkConnection(BasicConnection):
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/imports/{import_id}/tasks/{task_id}/dump",
-            headers=self.session.headers | {"Accept": MIMEType.APP_8STREAM.value},
+            headers={"Accept": MIMEType.APP_8STREAM.value},
         )
 
     def download_import_dump(
@@ -290,9 +293,12 @@ class BulkConnection(BasicConnection):
         response = self.request("GET", url)
         if not response.json()["meta"]["paging"]["currentPageSize"]:
             raise Exception("Missing part in request response", url, response.text)
-        headers = self.session.headers | {"Accept": MIMEType.APP_8STREAM.value}
         return b"".join(
-            self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
+            self.request(
+                "GET",
+                f"{url}/{chunk_id['id']}",
+                headers={"Accept": MIMEType.APP_8STREAM.value},
+            ).content
             for chunk_id in response.json()["chunks"]
         )
 
@@ -307,7 +313,7 @@ class BulkConnection(BasicConnection):
         return self.request(
             "GET",
             f"{self._api_main_url}/models/{model_id}/processes/{process_id}/tasks/{task_id}/dumps/{object_id}",
-            headers=self.session.headers | {"Accept": MIMEType.APP_8STREAM.value},
+            headers={"Accept": MIMEType.APP_8STREAM.value},
         )
 
     def download_process_dump(
@@ -322,8 +328,11 @@ class BulkConnection(BasicConnection):
         response = self.request("GET", url)
         if not response.json()["meta"]["paging"]["currentPageSize"]:
             raise Exception("Missing part in request response", url, response.text)
-        headers = self.session.headers | {"Accept": MIMEType.APP_8STREAM.value}
         return b"".join(
-            self.request("GET", f"{url}/{chunk_id['id']}", headers=headers).content
+            self.request(
+                "GET",
+                f"{url}/{chunk_id['id']}",
+                headers={"Accept": MIMEType.APP_8STREAM.value},
+            ).content
             for chunk_id in response.json()["chunks"]
         )
