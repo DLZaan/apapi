@@ -14,8 +14,6 @@ with open("tests/test.json") as f:
     t = json.loads(f.read())
 
 with Connection(f"{t['email']}:{t['password']}") as t_conn:
-    t_conn.details = False
-    t_conn.compress = True
     # Users
     t_conn.get_users()
     me = t_conn.get_me().json()["user"]

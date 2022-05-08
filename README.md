@@ -1,10 +1,11 @@
 # APAPI
 
-**APAPI** is an unofficial library that allows you to connect to Anaplan API v2 (Bulk and Transactional) using Python. 
-Here we export some CSV and import it back to Anaplan:
+**APAPI** is an unofficial library that allows you to connect to Anaplan APIs using Python. 
+Currently, you can use Bulk, Transactional, and ALM endpoints, with more coming soon!
+As an abstract example, here we export some CSV and import it back to Anaplan:
 ```python
 >>> import apapi
->>> with apapi.Connection(f"{email}:{password}") as my_connection:
+>>> with apapi.BulkConnection(f"{email}:{password}") as my_connection:
 >>>     my_connection.run_export(model_id, export_id)
 >>>     data = my_connection.download_file(model_id, export_id)
 >>>     print(data.decode())
@@ -27,7 +28,7 @@ $ python -m pip install apapi
 APAPI supports Python 3.9+.
 
 ## More Info
-- [Official documentation of Anaplan Integration API V2](https://anaplanbulkapi20.docs.apiary.io)
+- [Official documentation of Anaplan APIs](https://help.anaplan.com/da432e9b-24dd-4884-a70e-a3e409201e5c-Anaplan-API)
 - [Official documentation of Anaplan Connect V3 (Java)](https://anaplanenablement.s3.amazonaws.com/Community/Anapedia/Anaplan_Connect_User_Guide_v3.0.0.pdf)
 - [Official Anaplan Connect repository](https://github.com/anaplaninc/anaplan-java-client)
 
