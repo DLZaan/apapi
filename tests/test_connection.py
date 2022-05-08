@@ -1,21 +1,24 @@
-# -*- coding: utf-8 -*-
 import gzip
 import json
+import logging
 
-import apapi
+from apapi import Connection, utils
 
-with open("tests/test.json", "r") as f:
+logging.basicConfig(
+    format="%(asctime)s\t%(levelname)s\t%(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    level=logging.INFO,
+)
+
+with open("tests/test.json") as f:
     t = json.loads(f.read())
 
-with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
-    t_conn.details = False
-    t_conn.compress = True
+with Connection(f"{t['email']}:{t['password']}") as t_conn:
     # Users
     t_conn.get_users()
-    me = t_conn.get_me()
-    assert me.json()["user"]["email"] == t["email"]
-    also_me = t_conn.get_user(me.json()["user"]["id"])
-    assert also_me.json()["user"] == me.json()["user"]
+    me = t_conn.get_me().json()["user"]
+    assert me["email"] == t["email"]
+    assert t_conn.get_user(me["id"]).json()["user"] == me
     t_conn.get_workspace_users(t["workspace_id"])
     t_conn.get_workspace_admins(t["workspace_id"])
     t_conn.get_model_users(t["model_id"])
@@ -25,12 +28,15 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     # Workspaces
     t_conn.get_workspaces()
     t_conn.get_workspace(t["workspace_id"])
+    t_conn.get_user_workspaces(me["id"])
 
     # Models
     t_conn.get_models()
     t_conn.get_workspace_models(t["workspace_id"])
     t_conn.get_model(t["model_id"])
+    t_conn.get_user_models(me["id"])
 
+    # here we start working with a model, so it can take a few seconds to load it
     # Calendar
     t_conn.get_fiscal_year(t["model_id"])
     t_conn.set_fiscal_year(t["model_id"], "FY22")
@@ -46,7 +52,7 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.get_lists(t["model_id"])
     t_conn.get_list(t["model_id"], t["list_id"])
     t_conn.get_list_items(t["model_id"], t["list_id"])
-    t_conn.get_list_items(t["model_id"], t["list_id"], True, apapi.utils.TEXT_CSV)
+    t_conn.get_list_items(t["model_id"], t["list_id"], True, utils.MIMEType.TEXT_CSV)
     large_list_read = t_conn.start_large_list_read(t["model_id"], t["list_id"]).json()
     large_list_read_id = large_list_read["listReadRequest"]["requestId"]
     while large_list_read["listReadRequest"]["requestState"] != "COMPLETE":
@@ -117,10 +123,10 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
 
     # Cells
     t_conn.get_cell_data(t["model_id"], module_id)
-    t_conn.get_cell_data(t["model_id"], module_id, apapi.utils.TEXT_CSV)
-    t_conn.get_cell_data(t["model_id"], module_id, apapi.utils.TEXT_CSV_ESCAPED)
+    t_conn.get_cell_data(t["model_id"], module_id, utils.MIMEType.TEXT_CSV)
+    t_conn.get_cell_data(t["model_id"], module_id, utils.MIMEType.TEXT_CSV_ESCAPED)
     large_read = t_conn.start_large_cell_read(
-        t["model_id"], module_id, apapi.utils.ExportType.GRID
+        t["model_id"], module_id, utils.ExportType.GRID
     ).json()
     large_read_id = large_read["viewReadRequest"]["requestId"]
     while large_read["viewReadRequest"]["requestState"] != "COMPLETE":
@@ -176,7 +182,11 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     # WARNING: "7" (instead of "2") is wrong on purpose, to fail task and get dump
     t_conn.upload_file_chunk(t["model_id"], t["file_id"], data[: len(data) // 7], 0)
     t_conn.upload_file_chunk(
-        t["model_id"], t["file_id"], gzip.compress(data[len(data) // 2 :]), 1, True
+        t["model_id"],
+        t["file_id"],
+        gzip.compress(data[len(data) // 2 :]),
+        1,
+        utils.MIMEType.APP_GZIP,
     )
     t_conn.set_file_upload_complete(t["model_id"], t["file_id"])
 
@@ -198,10 +208,8 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.get_process(t["model_id"], t["process_id"])
     # WARNING: incorrect date on purpose, to fail task and get dump
     i_data = f"{t['email']},2022-02-29".encode()
-    mapping = apapi.utils.DEFAULT_DATA.copy()
-    mapping["mappingParameters"] = [{"entityType": "Version", "entityName": "Actual"}]
     t_conn.upload_file(t["model_id"], t["file_id_2"], i_data)
-    p_task = t_conn.run_process(t["model_id"], t["process_id"], mapping)
+    p_task = t_conn.run_process(t["model_id"], t["process_id"], {"Version": "Actual"})
     p_task = p_task.json()["task"]["taskId"]
     assert contains(t_conn.get_process_tasks(t["model_id"], t["process_id"]), p_task)
     while doing(
@@ -215,3 +223,47 @@ with apapi.Connection(f"{t['email']}:{t['password']}") as t_conn:
             ).content == t_conn.download_process_dump(
                 t["model_id"], t["process_id"], p_task, result["objectId"]
             )
+
+    # ALM
+    # Online Status
+    t_conn.change_status(t["model_id"], utils.ModelOnlineStatus.OFFLINE)
+    t_conn.change_status(t["model_id"], utils.ModelOnlineStatus.ONLINE)
+    # Revisions
+    previous_revision = t_conn.get_latest_revision(t["model_id"]).json()["revisions"][0]
+    new_revision = t_conn.add_revision(
+        t["model_id"], me["lastLoginDate"], "Test revision by APAPI"
+    ).json()["revision"]
+    revisions = t_conn.get_revisions(t["model_id"]).json()["revisions"]
+    syncable_revisions = t_conn.get_syncable_revisions(
+        t["model_id"], t["model_id_2"]
+    ).json()["revisions"]
+    assert (
+        new_revision["id"] == syncable_revisions[-1]["id"]
+        and new_revision["id"] == revisions[-1]["id"]
+        and previous_revision["id"] == revisions[-2]["id"]
+    )
+    t_conn.get_revision_models(t["model_id"], previous_revision["id"])
+    # Revisions comparison
+    comparison_id = t_conn.start_revisions_comparison(
+        t["model_id"], revisions[-1]["id"], t["model_id_2"], revisions[-2]["id"]
+    ).json()["task"]["taskId"]
+    while doing(t_conn.get_revisions_comparison_status(t["model_id_2"], comparison_id)):
+        pass
+    t_conn.get_revisions_comparison_data(
+        revisions[-1]["id"], t["model_id_2"], revisions[-2]["id"]
+    )
+    # Revisions comparison summary
+    comparison_id = t_conn.start_revisions_summary(
+        t["model_id"], revisions[-1]["id"], t["model_id_2"], revisions[-2]["id"]
+    ).json()["task"]["taskId"]
+    while doing(t_conn.get_revisions_summary_status(t["model_id_2"], comparison_id)):
+        pass
+    t_conn.get_revisions_summary_data(
+        revisions[-1]["id"], t["model_id_2"], revisions[-2]["id"]
+    )
+    # Sync models
+    sync = t_conn.sync(
+        t["model_id"], new_revision["id"], t["model_id_2"], previous_revision["id"]
+    ).json()["task"]["taskId"]
+    assert t_conn.get_syncs(t["model_id_2"]).json()["tasks"][-1]["taskId"] == sync
+    assert t_conn.get_sync(t["model_id_2"], sync).json()["task"]["result"]["successful"]
