@@ -16,7 +16,9 @@ def main():
         # EXAMPLE 1
         # this will produce date in YYYY-MM-DD format (for Date format)
         today = [{"lineItemId": t["line_item_id"], "value": date.today().isoformat()}]
+        # and then we send it to Anaplan model
         response = conn.post_cell_data(t["model_id"], t["module_id"], today)
+        # this is how you can check the outcome
         print(response.text)
 
         # EXAMPLE 2
@@ -26,16 +28,18 @@ def main():
         lineitem_name = "Now"
         # this will yield current time in ISO format (appropriate for Text format)
         now = datetime.now().isoformat()
+        # for each model in our predefined models' list we will try to do the same:
         for model_id in models:
-            # search for matching module
+            # 1. search for matching module
             modules = conn.get_modules(model_id).json()["modules"]
             module_id = next(mdl["id"] for mdl in modules if module_name == mdl["name"])
-            # search for matching line item (within module found in previous step)
+            # 2. search for matching line item (within module found in previous step)
             lineitems = conn.get_module_lineitems(model_id, module_id).json()["items"]
             lineitem_id = next(i["id"] for i in lineitems if lineitem_name == i["name"])
-            # upload the data
+            # 3. upload the data
             now_data = [{"lineItemId": lineitem_id, "value": now}]
             response = conn.post_cell_data(model_id, module_id, now_data)
+            # 4. check response
             print(response.text)
 
 
