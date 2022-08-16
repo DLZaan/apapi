@@ -17,7 +17,7 @@ Forecast,-3,😂
 >>>     my_connection.run_import(model_id, import_id)
 ```
 Full documentation can be found [here](https://dlzaan.github.io/apapi/apapi.html).
-Check [tests/test_connection.py](https://github.com/DLZaan/apapi/blob/master/tests/test_connection.py) for more examples and hints about usage.
+Check [examples](https://github.com/DLZaan/apapi/tree/master/examples) or [tests/test_connection.py](https://github.com/DLZaan/apapi/blob/master/tests/test_connection.py) for more examples and hints about usage.
 
 ## Installing Anaplan Python API and Supported Versions
 
@@ -28,6 +28,7 @@ $ python -m pip install apapi
 APAPI supports Python 3.9+.
 
 ## More Info
+- [Official Anaplan APIs Postman Collection](https://www.postman.com/apiplan/workspace/official-anaplan-collection/overview)
 - [Official documentation of Anaplan APIs](https://help.anaplan.com/da432e9b-24dd-4884-a70e-a3e409201e5c-Anaplan-API)
 - [Official documentation of Anaplan Connect V3 (Java)](https://anaplanenablement.s3.amazonaws.com/Community/Anapedia/Anaplan_Connect_User_Guide_v3.0.0.pdf)
 - [Official Anaplan Connect repository](https://github.com/anaplaninc/anaplan-java-client)
