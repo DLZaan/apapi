@@ -15,6 +15,7 @@ from .__version__ import (
     __version__,
 )
 from .alm import ALMConnection
+from .audit import AuditConnection
 from .basic_connection import BasicConnection
 from .bulk import BulkConnection
 from .connection import Connection

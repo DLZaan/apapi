@@ -1,6 +1,7 @@
 import gzip
 import json
 import logging
+from time import time
 
 from apapi import Connection, utils
 
@@ -267,3 +268,8 @@ with Connection(f"{t['email']}:{t['password']}") as t_conn:
     ).json()["task"]["taskId"]
     assert t_conn.get_syncs(t["model_id_2"]).json()["tasks"][-1]["taskId"] == sync
     assert t_conn.get_sync(t["model_id_2"], sync).json()["task"]["result"]["successful"]
+
+    # Audit
+    t_conn.get_events(utils.AuditEventType.USER_ACTIVITY)
+    t_conn.get_events(accept=utils.MIMEType.TEXT_PLAIN, interval=24)
+    t_conn.get_events(date_from=int((time() - 3600) * 1000), date_to=int(time() * 1000))
