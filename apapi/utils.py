@@ -63,6 +63,8 @@ AUTH_URL: Final[str] = "https://auth.anaplan.com"
 """Default Anaplan API Authentication base URL."""
 API_URL: Final[str] = "https://api.anaplan.com"
 """Default Anaplan API base URL for most services."""
+OAUTH2_URL: Final[str] = "https://us1a.app.anaplan.com"
+"""Default Anaplan API OAuth2 Service base URL."""
 
 USER_AGENT: Final[str] = f"{__title__}/{__version__}"
 """User-Agent info that should be send with each request for statistical purpose."""

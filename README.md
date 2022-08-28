@@ -1,11 +1,16 @@
 # APAPI
 
-**APAPI** is an unofficial library that allows you to connect to Anaplan APIs using Python. 
-Currently, you can use Bulk, Transactional, and ALM endpoints, with more coming soon!
+**APAPI** is an unofficial library that allows you to connect to Anaplan APIs using
+Python. Currently, you can authenticate using either Basic Authentication
+(email & password), or OAuth2 (using client_id and refresh_token) - Cert based
+authentication is on the roadmap. Use Bulk, Transactional, and ALM endpoints, with more
+coming soon!
+
 As an abstract example, here we export some CSV and import it back to Anaplan:
 ```python
 >>> import apapi
->>> with apapi.BulkConnection(f"{email}:{password}") as my_connection:
+>>> with apapi.BasicAuth(f"{email}:{password}") as authentication:
+>>>     my_connection = apapi.BulkConnection(authentication)
 >>>     my_connection.run_export(model_id, export_id)
 >>>     data = my_connection.download_file(model_id, export_id)
 >>>     print(data.decode())
@@ -17,7 +22,8 @@ Forecast,-3,😂
 >>>     my_connection.run_import(model_id, import_id)
 ```
 Full documentation can be found [here](https://dlzaan.github.io/apapi/apapi.html).
-Check [tests/test_connection.py](https://github.com/DLZaan/apapi/blob/master/tests/test_connection.py) for more examples and hints about usage.
+Check [tests](https://github.com/DLZaan/apapi/tree/master/tests)
+for more examples and hints about usage.
 
 ## Installing Anaplan Python API and Supported Versions
 

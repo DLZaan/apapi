@@ -3,7 +3,7 @@ This script shows how to get some general information about a model
 """
 import json
 
-from apapi import Connection
+from apapi import BasicAuth, Connection
 
 
 def main():
@@ -11,7 +11,8 @@ def main():
     with open("examples.json") as f:
         t = json.loads(f.read())["model_analysis"]
 
-    with Connection(f"{t['email']}:{t['password']}") as conn:
+    with BasicAuth(f"{t['email']}:{t['password']}") as auth:
+        conn = Connection(auth)
         # basic model information:
         data = conn.get_model(t["model_id"]).json()["model"]
         # we can remove "useless" information

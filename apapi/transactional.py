@@ -389,7 +389,9 @@ class TransactionalConnection(BasicConnection):
         More information about this endpoint can be found in the official Anaplan
         [API documentation](https://anaplanbulkapi20.docs.apiary.io/#RetrieveCellDataView).
         """
-        headers = {"Accept": accept.value if accept else self.session.headers["Accept"]}
+        headers = self._session.headers.copy()
+        if accept:
+            headers["Accept"] = accept.value
         params = {}
         if pages:
             params["pages"] = ",".join(pages)
