@@ -36,7 +36,9 @@ class AuthType(Enum):
     """Basic Authentication using username (email) and Anaplan password."""
     CERT = "CACertificate"
     """NOT IMPLEMENTED YET Certificate Authentication using S/MIME certificate."""
-    OAUTH2 = "OAuth2"
+    OAUTH2_NONROTATABLE = "OAuth2 Non-Rotatable"
+    """OAuth2 Service Authentication - using non-rotatable refresh tokens."""
+    OAUTH2_ROTATABLE = "OAuth2 Rotatable"
     """OAuth2 Service Authentication - using rotatable refresh tokens."""
 
 
@@ -136,8 +138,50 @@ class BasicAuth(AbstractAuth):
         self._handle_token(response.json()["tokenInfo"])
 
 
-class OAuth(AbstractAuth):
-    """OAuth Authentication - use client_id and refresh token to obtain API token."""
+class OAuth2NonRotatable(AbstractAuth):
+    """
+    OAuth2 Non-Rotatable Authentication:
+    Use client_id and non-rotatable refresh token to obtain API session token.
+    """
+
+    def __init__(
+        self,
+        client_id: str,
+        refresh_token: str,
+        oauth2_url: str = OAUTH2_URL,
+        auth_url: str = AUTH_URL,
+        session: Session = get_generic_session(),
+    ):
+        self._client_id: str = client_id
+        self._refresh_token: str = refresh_token
+        self._oauth2_url = oauth2_url
+        super().__init__(auth_url, session)
+
+    @property
+    def auth_type(self) -> AuthType:
+        """Indicator that this class uses OAuth2 Non-Rotatable Authentication."""
+        return AuthType.OAUTH2_NONROTATABLE
+
+    def authenticate(self) -> None:
+        """Acquire Anaplan Authentication Service Token using OAuth2 Service."""
+        data = {
+            "grant_type": "refresh_token",
+            "client_id": self._client_id,
+            "refresh_token": self._refresh_token,
+        }
+        response = self.session.post(
+            f"{self._oauth2_url}/oauth/token", data=json.dumps(data)
+        ).json()
+        self.session.auth = AnaplanAuth("AnaplanAuthToken " + response["access_token"])
+        self._timer = Timer(response["expires_in"], self.refresh_token)
+        self._timer.start()
+
+
+class OAuth2Rotatable(AbstractAuth):
+    """
+    OAuth2 Rotatable Authentication:
+    Use client_id and rotatable refresh token to obtain API session token.
+    """
 
     def __init__(
         self,
@@ -156,8 +200,8 @@ class OAuth(AbstractAuth):
 
     @property
     def auth_type(self) -> AuthType:
-        """Indicator that this class uses OAuth2 Authentication."""
-        return AuthType.OAUTH2
+        """Indicator that this class uses OAuth2 Rotatable Authentication."""
+        return AuthType.OAUTH2_ROTATABLE
 
     def authenticate(self) -> None:
         """Acquire Anaplan Authentication Service Token using OAuth2 Service."""

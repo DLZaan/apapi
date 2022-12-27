@@ -2,9 +2,9 @@
 
 **APAPI** is an unofficial library that allows you to connect to Anaplan APIs using
 Python. Currently, you can authenticate using either Basic Authentication
-(email & password), or OAuth2 (using client_id and refresh_token) - Cert based
-authentication is on the roadmap. Use Bulk, Transactional, and ALM endpoints, with more
-coming soon!
+(email & password), or OAuth2 (client_id & refresh_token, both non-rotatable and 
+rotatable) - Cert based authentication is on the roadmap.
+Use Bulk, Transactional, and ALM endpoints, with more coming soon!
 
 As an abstract example, here we export some CSV and import it back to Anaplan:
 ```python
