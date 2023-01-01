@@ -270,6 +270,24 @@ with Connection(f"{t['email']}:{t['password']}") as t_conn:
     assert t_conn.get_sync(t["model_id_2"], sync).json()["task"]["result"]["successful"]
 
     # Audit
-    t_conn.get_events(utils.AuditEventType.USER_ACTIVITY)
-    t_conn.get_events(accept=utils.MIMEType.TEXT_PLAIN, interval=24)
-    t_conn.get_events(date_from=int((time() - 3600) * 1000), date_to=int(time() * 1000))
+    now = time()
+    assert (
+        t_conn.get_events(
+            event_type=utils.AuditEventType.USER_ACTIVITY, interval=24
+        ).content
+        == t_conn.search_events(
+            event_type=utils.AuditEventType.USER_ACTIVITY, interval=24
+        ).content
+    )
+    assert (
+        t_conn.get_events(accept=utils.MIMEType.TEXT_PLAIN, interval=12).content
+        == t_conn.search_events(accept=utils.MIMEType.TEXT_PLAIN, interval=12).content
+    )
+    assert (
+        t_conn.get_events(
+            date_from=int((now - 3600) * 1000), date_to=int(now * 1000)
+        ).content
+        == t_conn.search_events(
+            date_from=int((now - 3600) * 1000), date_to=int(now * 1000)
+        ).content
+    )
