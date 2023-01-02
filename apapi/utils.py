@@ -5,6 +5,7 @@ This module provides utility classes, functions & constants that are used within
 and might be useful for external consumption as well.
 """
 
+import json
 from enum import Enum
 from typing import Final
 
@@ -78,3 +79,40 @@ DEFAULT_HEADERS: Final[dict] = {
 DEFAULT_DATA: Final[dict] = {"localeName": "en_US"}
 """Default post data for bulk actions."""
 ENCODING_GZIP: Final[str] = "gzip,deflate"
+
+
+def start_oauth2_flow(
+    client_id: str,
+    oauth2_url: str = OAUTH2_URL,
+    session: Session = get_generic_session(),
+) -> dict:
+    """Start OAuth2 token generation flow by obtaining device code & user code."""
+
+    response = session.post(
+        f"{oauth2_url}/oauth/device/code",
+        data=json.dumps(
+            {"client_id": client_id, "scope": "openid profile email offline_access"}
+        ),
+    )
+    return response.json()
+
+
+def obtain_oauth2_token(
+    client_id: str,
+    device_code: str,
+    oauth2_url: str = OAUTH2_URL,
+    session: Session = get_generic_session(),
+) -> dict:
+    """Obtain OAuth2 refresh token or check the status of its generation."""
+
+    response = session.post(
+        f"{oauth2_url}/oauth/token",
+        data=json.dumps(
+            {
+                "grant_type": "urn:ietf:params:oauth:grant-type:device_code",
+                "client_id": client_id,
+                "device_code": device_code,
+            }
+        ),
+    )
+    return response.json()
