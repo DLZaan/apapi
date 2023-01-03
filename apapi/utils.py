@@ -35,13 +35,25 @@ class MIMEType(Enum):
     APP_GZIP = "application/x-gzip"
     TEXT_CSV = "text/csv"
     TEXT_CSV_ESCAPED = "text/csv;escaped=true"
+    TEXT_PLAIN = "text/plain"
 
 
 class ModelOnlineStatus(Enum):
-    """Needed for change of model's online status"""
+    """Needed for change of model's online status."""
 
     OFFLINE = "offline"
     ONLINE = "online"
+
+
+class AuditEventType(Enum):
+    """Types of Audit API events."""
+
+    ALL = "all"
+    """All types of events."""
+    BYOK = "byok"
+    """Only Bring Your Own Key events."""
+    USER_ACTIVITY = "user_activity"
+    """Only events related to user activity."""
 
 
 def get_generic_session(retry_count: int = 3) -> Session:
@@ -64,6 +76,8 @@ AUTH_URL: Final[str] = "https://auth.anaplan.com"
 """Default Anaplan API Authentication base URL."""
 API_URL: Final[str] = "https://api.anaplan.com"
 """Default Anaplan API base URL for most services."""
+AUDIT_URL: Final[str] = "https://audit.anaplan.com"
+"""Default Anaplan API base URL for audit services."""
 OAUTH2_URL: Final[str] = "https://us1a.app.anaplan.com"
 """Default Anaplan API OAuth2 Service base URL."""
 

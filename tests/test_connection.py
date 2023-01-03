@@ -1,5 +1,7 @@
 import gzip
 import json
+import logging
+from time import time
 
 from apapi import BasicAuth, Connection, utils
 
@@ -261,3 +263,26 @@ def test(config_json_path):
     ).json()["task"]["taskId"]
     assert t_conn.get_syncs(t["model_id_2"]).json()["tasks"][-1]["taskId"] == sync
     assert t_conn.get_sync(t["model_id_2"], sync).json()["task"]["result"]["successful"]
+
+    # Audit
+    now = time()
+    assert (
+        t_conn.get_events(
+            event_type=utils.AuditEventType.USER_ACTIVITY, interval=24
+        ).content
+        == t_conn.search_events(
+            event_type=utils.AuditEventType.USER_ACTIVITY, interval=24
+        ).content
+    )
+    assert (
+        t_conn.get_events(accept=utils.MIMEType.TEXT_PLAIN, interval=12).content
+        == t_conn.search_events(accept=utils.MIMEType.TEXT_PLAIN, interval=12).content
+    )
+    assert (
+        t_conn.get_events(
+            date_from=int((now - 3600) * 1000), date_to=int(now * 1000)
+        ).content
+        == t_conn.search_events(
+            date_from=int((now - 3600) * 1000), date_to=int(now * 1000)
+        ).content
+    )
