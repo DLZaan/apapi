@@ -1,6 +1,5 @@
 import gzip
 import json
-import logging
 from time import time
 
 from apapi import BasicAuth, Connection, utils

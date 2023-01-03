@@ -19,6 +19,7 @@ def main():
         export_name = "TEST Export"
         exports = conn.get_exports(t["model_id"]).json()["exports"]
         export_id = next(exp["id"] for exp in exports if export_name == exp["name"])
+        assert export_id == t["export_id"]
 
         # Now you should know the ID. It's usually the best option to use ID
         # Name of an action can change, but ID always stays the same

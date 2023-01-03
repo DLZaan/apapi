@@ -5,18 +5,11 @@ Child of Basic Connection class, responsible for Audit API capabilities
 """
 import json
 
-from requests import Response, Session
+from requests import Response
 
-from .authentication import AuthType
+from .authentication import AbstractAuth
 from .basic_connection import BasicConnection
-from .utils import (
-    API_URL,
-    AUDIT_URL,
-    AUTH_URL,
-    AuditEventType,
-    MIMEType,
-    get_generic_session,
-)
+from .utils import API_URL, AUDIT_URL, PAGING_LIMIT, AuditEventType, MIMEType
 
 
 class AuditConnection(BasicConnection):
@@ -24,14 +17,11 @@ class AuditConnection(BasicConnection):
 
     def __init__(
         self,
-        credentials: str,
-        auth_type: AuthType = AuthType.BASIC,
-        session: Session = get_generic_session(),
-        auth_url: str = AUTH_URL,
+        authentication: AbstractAuth,
         api_url: str = API_URL,
         _audit_url: str = AUDIT_URL,
     ):
-        super().__init__(credentials, auth_type, session, auth_url, api_url)
+        super().__init__(authentication, api_url)
         self._audit_url: str = f"{_audit_url}/audit/api/1"
 
     def get_events(
@@ -45,7 +35,7 @@ class AuditConnection(BasicConnection):
         """Retrieve Audit Events for tenant."""
         params = {
             "type": event_type.value,
-            "limit": 2147483647,  # 2^31-1, max accepted, as default is 20
+            "limit": PAGING_LIMIT,  # needed for this endpoint, as default is 20
         }
         if date_from:
             params["dateFrom"] = date_from
@@ -75,7 +65,7 @@ class AuditConnection(BasicConnection):
         """
         params = {
             "type": event_type.value,
-            "limit": 2147483647,  # 2^31-1, max accepted, as default is 20
+            "limit": PAGING_LIMIT,  # needed for this endpoint, as default is 20
         }
         data = {}
         if date_from:

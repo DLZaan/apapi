@@ -56,28 +56,12 @@ class AuditEventType(Enum):
     """Only events related to user activity."""
 
 
-def get_generic_session(retry_count: int = 3) -> Session:
-    """Returns default session: headers & adapter (with given retry count) mounted."""
-    adapter = HTTPAdapter(
-        max_retries=Retry(
-            total=retry_count,
-            allowed_methods=None,  # this means retry on ANY method (including POST)
-            status_forcelist=(407, 410, 429, 500, 502, 503, 504),
-        )
-    )
-    session = Session()
-    session.mount("http://", adapter)
-    session.mount("https://", adapter)
-    session.headers = DEFAULT_HEADERS.copy()
-    return session
-
-
-AUTH_URL: Final[str] = "https://auth.anaplan.com"
-"""Default Anaplan API Authentication base URL."""
 API_URL: Final[str] = "https://api.anaplan.com"
 """Default Anaplan API base URL for most services."""
 AUDIT_URL: Final[str] = "https://audit.anaplan.com"
 """Default Anaplan API base URL for audit services."""
+AUTH_URL: Final[str] = "https://auth.anaplan.com"
+"""Default Anaplan API Authentication base URL."""
 OAUTH2_URL: Final[str] = "https://us1a.app.anaplan.com"
 """Default Anaplan API OAuth2 Service base URL."""
 
@@ -93,6 +77,25 @@ DEFAULT_HEADERS: Final[dict] = {
 DEFAULT_DATA: Final[dict] = {"localeName": "en_US"}
 """Default post data for bulk actions."""
 ENCODING_GZIP: Final[str] = "gzip,deflate"
+"""Optional encoding label, used when data uploaded is compressed."""
+PAGING_LIMIT: Final[int] = 2147483647
+"""Max value for paging limit (2^31-1), needed for some endpoints where default is 20"""
+
+
+def get_generic_session(retry_count: int = 3) -> Session:
+    """Returns default session: headers & adapter (with given retry count) mounted."""
+    adapter = HTTPAdapter(
+        max_retries=Retry(
+            total=retry_count,
+            allowed_methods=None,  # this means retry on ANY method (including POST)
+            status_forcelist=(407, 410, 429, 500, 502, 503, 504),
+        )
+    )
+    session = Session()
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    session.headers = DEFAULT_HEADERS.copy()
+    return session
 
 
 def start_oauth2_flow(

@@ -10,7 +10,7 @@ from typing import Iterable
 from requests import Response
 
 from .basic_connection import BasicConnection
-from .utils import ENCODING_GZIP, ExportType, MIMEType
+from .utils import ENCODING_GZIP, PAGING_LIMIT, ExportType, MIMEType
 
 
 class TransactionalConnection(BasicConnection):
@@ -41,7 +41,7 @@ class TransactionalConnection(BasicConnection):
         return self.request(
             "GET",
             f"{self._api_main_url}/workspaces/{workspace_id}/admins",
-            {"limit": 2147483647},  # 2^31-1, max accepted, put here as default is 20
+            {"limit": PAGING_LIMIT},  # needed for this endpoint, as default is 20
         )
 
     def get_model_users(self, model_id: str) -> Response:
@@ -379,8 +379,8 @@ class TransactionalConnection(BasicConnection):
     ) -> Response:
         """Get cells values for a specified view, up to a million cells.
 
-        **WARNING**: This query can be used to retrieve information for smaller lists.
-        For larger lists use large_cell_read functions.
+        **WARNING**: This query can be used to retrieve information for smaller views.
+        For larger views use large_cell_read functions.
 
         Pages argument should be iterable collection of dimensionId & itemId strings
         in a form of key-value pairs joined by ":" (colon),

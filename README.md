@@ -4,7 +4,7 @@
 Python. Currently, you can authenticate using either Basic Authentication
 (email & password), or OAuth2 (client_id & refresh_token, both non-rotatable and 
 rotatable) - Cert based authentication is on the roadmap.
-Use Bulk, Transactional, and ALM endpoints, with more coming soon!
+Use Bulk, Transactional, ALM and Audit endpoints, with more coming soon!
 
 As an abstract example, here we export some CSV and import it back to Anaplan:
 ```python
@@ -35,7 +35,7 @@ APAPI supports Python 3.9+.
 
 ## More Info
 - [Official documentation of Anaplan APIs](https://help.anaplan.com/da432e9b-24dd-4884-a70e-a3e409201e5c-Anaplan-API)
-- [Official documentation of Anaplan Connect V3 (Java)](https://anaplanenablement.s3.amazonaws.com/Community/Anapedia/Anaplan_Connect_User_Guide_v3.0.0.pdf)
+- [Official documentation of Anaplan Connect V4 (Java)](https://anaplanenablement.s3.amazonaws.com/Community/Anapedia/Anaplan_Connect_User_Guide_v4.0.0.pdf)
 - [Official Anaplan Connect repository](https://github.com/anaplaninc/anaplan-java-client)
 
 ## How to Contribute
