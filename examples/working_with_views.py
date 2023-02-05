@@ -4,7 +4,7 @@ This script shows how to use Transactional API to read and write data without ac
 import json
 from time import sleep
 
-from apapi import TransactionalConnection
+from apapi import OAuth2NonRotatable, TransactionalConnection
 from apapi.utils import ExportType, MIMEType
 
 
@@ -13,7 +13,8 @@ def main():
     with open("examples.json") as f:
         t = json.loads(f.read())["working_with_views"]
 
-    with TransactionalConnection(f"{t['email']}:{t['password']}") as conn:
+    with OAuth2NonRotatable(t["client_id"], t["refresh_token"]) as auth:
+        conn = TransactionalConnection(auth)
         # EXAMPLE 1
         # reading data directly from a saved view
         # if you know the name of a resource, but you don't know the ID:

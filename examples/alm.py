@@ -4,7 +4,7 @@ This script shows how to automate synchronization between Anaplan models
 import json
 import time
 
-from apapi import ALMConnection, BasicAuth, utils
+from apapi import ALMConnection, OAuth2NonRotatable, utils
 
 
 def main():
@@ -12,7 +12,7 @@ def main():
     with open("examples.json") as f:
         t = json.loads(f.read())["alm"]
 
-    with BasicAuth(f"{t['email']}:{t['password']}") as auth:
+    with OAuth2NonRotatable(t["client_id"], t["refresh_token"]) as auth:
         conn = ALMConnection(auth)
         # Get the latest revision from a model which we want to sync to PROD
         # Here we use DEV, but you can also put TEST (then you don't need next step)

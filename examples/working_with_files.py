@@ -3,7 +3,7 @@ This script shows how to download, upload and do other actions with files/Bulk A
 """
 import json
 
-from apapi import BasicAuth, BulkConnection
+from apapi import BulkConnection, OAuth2NonRotatable
 
 
 def main():
@@ -11,7 +11,7 @@ def main():
     with open("examples.json") as f:
         t = json.loads(f.read())["working_with_files"]
 
-    with BasicAuth(f"{t['email']}:{t['password']}") as auth:
+    with OAuth2NonRotatable(t["client_id"], t["refresh_token"]) as auth:
         conn = BulkConnection(auth)
         # EXAMPLE 1
         # running export and downloading the file to local directory

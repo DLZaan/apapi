@@ -4,7 +4,7 @@ This script shows how to automate current date update for Anaplan models
 import json
 from datetime import date, datetime
 
-from apapi import BasicAuth, TransactionalConnection
+from apapi import OAuth2NonRotatable, TransactionalConnection
 
 
 def main():
@@ -12,7 +12,7 @@ def main():
     with open("examples.json") as f:
         t = json.loads(f.read())["current_day"]
 
-    with BasicAuth(f"{t['email']}:{t['password']}") as auth:
+    with OAuth2NonRotatable(t["client_id"], t["refresh_token"]) as auth:
         conn = TransactionalConnection(auth)
         # EXAMPLE 1
         # this will produce date in YYYY-MM-DD format (for Date format)
