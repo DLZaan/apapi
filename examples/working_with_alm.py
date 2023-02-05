@@ -10,7 +10,7 @@ from apapi import ALMConnection, OAuth2NonRotatable, utils
 def main():
     # let's load our variables from config file
     with open("examples.json") as f:
-        t = json.loads(f.read())["alm"]
+        t = json.loads(f.read())["working_with_alm"]
 
     with OAuth2NonRotatable(t["client_id"], t["refresh_token"]) as auth:
         conn = ALMConnection(auth)
