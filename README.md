@@ -7,19 +7,20 @@ rotatable) - Cert based authentication is on the roadmap.
 Use Bulk, Transactional, ALM and Audit endpoints, with more coming soon!
 
 As an abstract example, here we export some CSV and import it back to Anaplan:
+
 ```python
->>> import apapi
->>> with apapi.BasicAuth(f"{email}:{password}") as authentication:
->>>     my_connection = apapi.BulkConnection(authentication)
->>>     my_connection.run_export(model_id, export_id)
->>>     data = my_connection.download_file(model_id, export_id)
->>>     print(data.decode())
-Versions,Data,Text
-Actual,1,test
-Budget,2.5,ąćęłńśżź
-Forecast,-3,😂
->>>     my_connection.upload_file(model_id, file_id, data)
->>>     my_connection.run_import(model_id, import_id)
+>> > import apapi
+>> > with apapi.BasicAuth(f"{email}:{password}") as authentication:
+    >> > my_connection = apapi.BulkConnection(authentication)
+>> > my_connection.run_export(model_id, export_id)
+>> > data = my_connection.download_file(model_id, export_id)
+>> > print(data.decode())
+Versions, Data, Text
+Actual, 1, test
+Budget, 2.5, ąćęłńśżź
+Forecast, -3,😂
+>> > my_connection.put_file(model_id, file_id, data)
+>> > my_connection.run_import(model_id, import_id)
 ```
 Full documentation can be found [here](https://dlzaan.github.io/apapi/apapi.html).
 Check [examples](https://github.com/DLZaan/apapi/tree/master/examples)
@@ -42,7 +43,9 @@ APAPI supports Python 3.9+.
 
 ## How to Contribute
 
-Contributions are welcome, even if you can't code it - in such case, please submit an issue if you need any additional feature (preferably in the form of User Story, like *"As {who} I need {what} because {why}"*).
+Contributions are welcome, even if you can't code it - in such case, please submit 
+an issue if you need any additional feature (preferably in the form of User Story, 
+like *"As {who} I need {what} because {why}"*).
 If you encounter any bugs, please report the problem with a description and error log.
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/apapi)

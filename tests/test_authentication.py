@@ -5,7 +5,6 @@ from apapi.authentication import BasicAuth, OAuth2NonRotatable, OAuth2Rotatable
 
 
 def test(config_json_path):
-
     with open(config_json_path) as f:
         t = json.loads(f.read())
 

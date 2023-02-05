@@ -66,7 +66,7 @@ class BulkConnection(BasicConnection):
         )
 
     # Files manipulation
-    def upload_file(self, model_id: str, file_id: str, data: bytes) -> Response:
+    def put_file(self, model_id: str, file_id: str, data: bytes) -> Response:
         """Upload file in one go.
 
         **WARNING**: For bigger files (or if this method fails) methods that upload file

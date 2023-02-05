@@ -50,7 +50,7 @@ def main():
         with open("Anaplan_test.csv", "rb") as file:
             data_in = file.read()
         # upload data to Anaplan
-        conn.upload_file(t["model_id"], t["file_id"], data_in)
+        conn.put_file(t["model_id"], t["file_id"], data_in)
         # run import - you should get task ID, which you can use to monitor the job
         i_task = conn.run_import(t["model_id"], t["import_id"]).json()["task"]["taskId"]
         while doing(tsk := conn.get_import_task(t["model_id"], t["import_id"], i_task)):

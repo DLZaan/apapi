@@ -199,11 +199,11 @@ def test(config_json_path):
     while doing(t_conn.get_action_task(t["model_id"], t["action_id"], a_task)):
         pass
     # requires: process with import
-    # import defined as: column1->Users, column2->Date, Versions->ask each time
+    # where import defined as: column1->Users, column2->Date, Versions->ask each time
     t_conn.get_process(t["model_id"], t["process_id"])
     # WARNING: incorrect date on purpose, to fail task and get dump
     i_data = f"{t['email']},2022-02-29".encode()
-    t_conn.upload_file(t["model_id"], t["file_id_2"], i_data)
+    t_conn.put_file(t["model_id"], t["file_id_2"], i_data)
     p_task = t_conn.run_process(t["model_id"], t["process_id"], {"Version": "Actual"})
     p_task = p_task.json()["task"]["taskId"]
     assert contains(t_conn.get_process_tasks(t["model_id"], t["process_id"]), p_task)

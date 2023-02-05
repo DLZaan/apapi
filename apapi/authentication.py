@@ -172,6 +172,9 @@ class OAuth2NonRotatable(AbstractAuth):
         response = self.session.post(
             f"{self._oauth2_url}/oauth/token", data=json.dumps(data)
         ).json()
+        if "access_token" not in response:
+            logging.error(f"Tried to authenticate, access token missing: {response}")
+            raise ConnectionError("Unable to authenticate")
         self.session.auth = AnaplanAuth("AnaplanAuthToken " + response["access_token"])
         self._timer = Timer(response["expires_in"], self.refresh_token)
         self._timer.start()
@@ -214,6 +217,9 @@ class OAuth2Rotatable(AbstractAuth):
             f"{self._oauth2_url}/oauth/token", data=json.dumps(data)
         ).json()
         self._refresh_token_setter(response["refresh_token"])
+        if "access_token" not in response:
+            logging.error(f"Tried to authenticate, access token missing: {response}")
+            raise ConnectionError("Unable to authenticate")
         self.session.auth = AnaplanAuth("AnaplanAuthToken " + response["access_token"])
         self._timer = Timer(response["expires_in"], self.refresh_token)
         self._timer.start()

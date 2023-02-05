@@ -5,7 +5,7 @@ import json
 from time import sleep
 
 from apapi import OAuth2NonRotatable, TransactionalConnection
-from apapi.utils import ExportType, MIMEType
+from apapi.utils import MIMEType
 
 
 def main():
@@ -80,7 +80,7 @@ def main():
 
         # C) we can delete items from the list
         del items[0]["subsets"]
-        delete_response = conn.delete_list_items(t["model_id"], t["list_id"], items)
+        conn.delete_list_items(t["model_id"], t["list_id"], items)
 
         # EXAMPLE 4
         # each item on a list is given unique, sequential index
