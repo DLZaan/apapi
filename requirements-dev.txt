@@ -1,6 +1,6 @@
 -r requirements.txt
-black~=22.1
-isort~=5.10
-pdoc~=11.0
-twine>=4.0
-wheel>=0.36
+black~=23.1
+isort~=5.12
+pdoc~=12.3
+twine~=4.0
+wheel~=0.38
