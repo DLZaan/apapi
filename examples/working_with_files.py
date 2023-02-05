@@ -3,7 +3,7 @@ This script shows how to download, upload and do other actions with files/Bulk A
 """
 import json
 
-from apapi import BulkConnection
+from apapi import BasicAuth, BulkConnection
 
 
 def main():
@@ -11,13 +11,15 @@ def main():
     with open("examples.json") as f:
         t = json.loads(f.read())["working_with_files"]
 
-    with BulkConnection(f"{t['email']}:{t['password']}") as conn:
+    with BasicAuth(f"{t['email']}:{t['password']}") as auth:
+        conn = BulkConnection(auth)
         # EXAMPLE 1
         # running export and downloading the file to local directory
         # if you know the name of a resource, but you don't know the ID:
         export_name = "TEST Export"
         exports = conn.get_exports(t["model_id"]).json()["exports"]
         export_id = next(exp["id"] for exp in exports if export_name == exp["name"])
+        assert export_id == t["export_id"]
 
         # Now you should know the ID. It's usually the best option to use ID
         # Name of an action can change, but ID always stays the same

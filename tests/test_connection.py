@@ -1,19 +1,16 @@
 import gzip
 import json
-import logging
+from time import time
 
-from apapi import Connection, utils
+from apapi import BasicAuth, Connection, utils
 
-logging.basicConfig(
-    format="%(asctime)s\t%(levelname)s\t%(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    level=logging.INFO,
-)
 
-with open("tests/test.json") as f:
-    t = json.loads(f.read())
+def test(config_json_path):
+    with open(config_json_path) as f:
+        t = json.loads(f.read())
+    t_auth = BasicAuth(f"{t['email']}:{t['password']}")
+    t_conn = Connection(t_auth)
 
-with Connection(f"{t['email']}:{t['password']}") as t_conn:
     # Users
     t_conn.get_users()
     me = t_conn.get_me().json()["user"]
@@ -22,8 +19,6 @@ with Connection(f"{t['email']}:{t['password']}") as t_conn:
     t_conn.get_workspace_users(t["workspace_id"])
     t_conn.get_workspace_admins(t["workspace_id"])
     t_conn.get_model_users(t["model_id"])
-    # manual token refresh check, normally not needed as it auto refreshes every 30 min
-    t_conn.refresh_token()
 
     # Workspaces
     t_conn.get_workspaces()
@@ -87,7 +82,7 @@ with Connection(f"{t['email']}:{t['password']}") as t_conn:
         or not delete_response.json()["result"]["failures"]
     )
     try:
-        reset_response = t_conn.reset_list_index(t["model_id"], t["list_id"])
+        t_conn.reset_list_index(t["model_id"], t["list_id"])
     except Exception as error:
         assert json.loads(error.args[2])["status"]["code"] == 400
 
@@ -267,3 +262,26 @@ with Connection(f"{t['email']}:{t['password']}") as t_conn:
     ).json()["task"]["taskId"]
     assert t_conn.get_syncs(t["model_id_2"]).json()["tasks"][-1]["taskId"] == sync
     assert t_conn.get_sync(t["model_id_2"], sync).json()["task"]["result"]["successful"]
+
+    # Audit
+    now = time()
+    assert (
+        t_conn.get_events(
+            event_type=utils.AuditEventType.USER_ACTIVITY, interval=24
+        ).content
+        == t_conn.search_events(
+            event_type=utils.AuditEventType.USER_ACTIVITY, interval=24
+        ).content
+    )
+    assert (
+        t_conn.get_events(accept=utils.MIMEType.TEXT_PLAIN, interval=12).content
+        == t_conn.search_events(accept=utils.MIMEType.TEXT_PLAIN, interval=12).content
+    )
+    assert (
+        t_conn.get_events(
+            date_from=int((now - 3600) * 1000), date_to=int(now * 1000)
+        ).content
+        == t_conn.search_events(
+            date_from=int((now - 3600) * 1000), date_to=int(now * 1000)
+        ).content
+    )

@@ -1,11 +1,16 @@
 # APAPI
 
-**APAPI** is an unofficial library that allows you to connect to Anaplan APIs using Python. 
-Currently, you can use Bulk, Transactional, and ALM endpoints, with more coming soon!
+**APAPI** is an unofficial library that allows you to connect to Anaplan APIs using
+Python. Currently, you can authenticate using either Basic Authentication
+(email & password), or OAuth2 (client_id & refresh_token, both non-rotatable and 
+rotatable) - Cert based authentication is on the roadmap.
+Use Bulk, Transactional, ALM and Audit endpoints, with more coming soon!
+
 As an abstract example, here we export some CSV and import it back to Anaplan:
 ```python
 >>> import apapi
->>> with apapi.BulkConnection(f"{email}:{password}") as my_connection:
+>>> with apapi.BasicAuth(f"{email}:{password}") as authentication:
+>>>     my_connection = apapi.BulkConnection(authentication)
 >>>     my_connection.run_export(model_id, export_id)
 >>>     data = my_connection.download_file(model_id, export_id)
 >>>     print(data.decode())
@@ -17,7 +22,9 @@ Forecast,-3,😂
 >>>     my_connection.run_import(model_id, import_id)
 ```
 Full documentation can be found [here](https://dlzaan.github.io/apapi/apapi.html).
-Check [examples](https://github.com/DLZaan/apapi/tree/master/examples) or [tests/test_connection.py](https://github.com/DLZaan/apapi/blob/master/tests/test_connection.py) for more examples and hints about usage.
+Check [examples](https://github.com/DLZaan/apapi/tree/master/examples)
+or [tests](https://github.com/DLZaan/apapi/tree/master/tests)
+for more examples and hints about usage.
 
 ## Installing Anaplan Python API and Supported Versions
 
@@ -30,7 +37,7 @@ APAPI supports Python 3.9+.
 ## More Info
 - [Official Anaplan APIs Postman Collection](https://www.postman.com/apiplan/workspace/official-anaplan-collection/overview)
 - [Official documentation of Anaplan APIs](https://help.anaplan.com/da432e9b-24dd-4884-a70e-a3e409201e5c-Anaplan-API)
-- [Official documentation of Anaplan Connect V3 (Java)](https://anaplanenablement.s3.amazonaws.com/Community/Anapedia/Anaplan_Connect_User_Guide_v3.0.0.pdf)
+- [Official documentation of Anaplan Connect V4 (Java)](https://anaplanenablement.s3.amazonaws.com/Community/Anapedia/Anaplan_Connect._User_Guide_v4.0.3.pdf)
 - [Official Anaplan Connect repository](https://github.com/anaplaninc/anaplan-java-client)
 
 ## How to Contribute
