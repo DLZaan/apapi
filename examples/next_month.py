@@ -6,7 +6,7 @@ to data loss - execute this script as an experiment only on non-production model
 import datetime
 import json
 
-from apapi import TransactionalConnection
+from apapi import OAuth2NonRotatable, TransactionalConnection
 
 
 def main():
@@ -17,7 +17,8 @@ def main():
     # this will produce today's date in YYYY-MM-DD format
     today = datetime.date.today().isoformat()
 
-    with TransactionalConnection(f"{t['email']}:{t['password']}") as conn:
+    with OAuth2NonRotatable(t["client_id"], t["refresh_token"]) as auth:
+        conn = TransactionalConnection(auth)
         # EXAMPLE 1
         # let's update current period of the model
         response = conn.set_current_period(t["model_id"], today)

@@ -9,7 +9,7 @@ def main():
         prog=__title__,
         description=__description__,
         epilog="""Usage should be similar to official Anaplan Connect:
-               https://anaplanenablement.s3.amazonaws.com/Community/Anapedia/Anaplan_Connect_User_Guide_v3.0.0.pdf""",
+               https://anaplanenablement.s3.amazonaws.com/Community/Anapedia/Anaplan_Connect._User_Guide_v4.0.3.pdf""",
     )
     # General
     parser.add_argument(

@@ -3,7 +3,7 @@
 """
 import logging
 
-from . import authentication, utils
+from . import utils
 from .__version__ import (
     __author__,
     __author_email__,
@@ -15,6 +15,8 @@ from .__version__ import (
     __version__,
 )
 from .alm import ALMConnection
+from .audit import AuditConnection
+from .authentication import BasicAuth, OAuth2NonRotatable, OAuth2Rotatable
 from .basic_connection import BasicConnection
 from .bulk import BulkConnection
 from .connection import Connection

@@ -50,11 +50,19 @@ setup(
         "Natural Language :: English",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Topic :: Office/Business :: Financial",
         "Topic :: Software Development :: Libraries",
     ],
+    project_urls={
+        "Documentation": "https://dlzaan.github.io/apapi/apapi.html",
+        "Source": "https://github.com/DLZaan/apapi",
+        "Changelog": "https://pip.pypa.io/en/stable/news/",
+    },
     entry_points={
         "console_scripts": [
             "apapi=apapi.__main__:main",

@@ -3,7 +3,7 @@ This script shows how to get some general information about a model
 """
 import json
 
-from apapi import Connection
+from apapi import Connection, OAuth2NonRotatable
 
 
 def main():
@@ -11,7 +11,8 @@ def main():
     with open("examples.json") as f:
         t = json.loads(f.read())["model_analysis"]
 
-    with Connection(f"{t['email']}:{t['password']}") as conn:
+    with OAuth2NonRotatable(t["client_id"], t["refresh_token"]) as auth:
+        conn = Connection(auth)
         # basic model information:
         data = conn.get_model(t["model_id"]).json()["model"]
         # we can remove "useless" information
@@ -43,6 +44,8 @@ def main():
         formats = {}
         for li in lineitems:
             data_type = li["format"]
+            if "NONE" == data_type:
+                continue
             if data_type not in formats:
                 formats[data_type] = {"cellCount": 0}
             formats[data_type]["cellCount"] += li["cellCount"]
@@ -56,7 +59,7 @@ def main():
             val["cellSize%"] = (100 * val["cellSize"]) // data["cellSize"]
         data["formats"] = formats
         # we can now print it
-        print(data)
+        print(json.dumps(data, indent=4))
         # or save to file
         with open("model_analysis.json", "w") as file:
             json.dump(data, file, indent=4)

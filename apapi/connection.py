@@ -5,12 +5,14 @@ This module provides Connection class, which contains all available API function
 """
 
 from .alm import ALMConnection
+from .audit import AuditConnection
 from .bulk import BulkConnection
 from .transactional import TransactionalConnection
 
 
 class Connection(
     ALMConnection,
+    AuditConnection,
     BulkConnection,
     TransactionalConnection,
 ):
