@@ -85,9 +85,7 @@ def main():
         # EXAMPLE 4
         # each item on a list is given unique, sequential index
         # if we are adding and removing lots of items frequently, we can reach the limit
-        # maximum value is 1 billion, and we can reset this index if we are close
-        # if item index is at least 900 million, and list is currently empty
-        # we can reset the index using below request
+        # maximum value is 1 billion, and we can reset it if the list is currently empty
         try:
             conn.reset_list_index(t["model_id"], t["list_id"])
             print("List index reset successful")

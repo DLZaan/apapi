@@ -30,6 +30,8 @@ def test(config_json_path):
     t_conn.get_workspace_models(t["workspace_id"])
     t_conn.get_model(t["model_id"])
     t_conn.get_user_models(me["id"])
+    # dummy ID - it should still return 200, just give an error in nested results
+    t_conn.delete_models(t["workspace_id"], ["123"])
 
     # here we start working with a model, so it can take a few seconds to load it
     # Calendar
@@ -81,6 +83,7 @@ def test(config_json_path):
         or "failures" not in delete_response.json()["result"]
         or not delete_response.json()["result"]["failures"]
     )
+    # it will fail if the list is not numbered or not empty
     try:
         t_conn.reset_list_index(t["model_id"], t["list_id"])
     except Exception as error:
