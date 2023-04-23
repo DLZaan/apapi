@@ -171,19 +171,10 @@ def test(config_json_path):
     # we use the fact (undocumented!) that for exports action_id=file_id
     t_conn.get_import(t["model_id"], t["import_id"])
     data = t_conn.get_file(t["model_id"], t["export_id"]).content
-    assert t_conn.download_file(t["model_id"], t["export_id"]) == data
+    assert b"".join(t_conn.download_file(t["model_id"], t["export_id"])) == data
 
-    t_conn.set_file_chunk_count(t["model_id"], t["file_id"], -1)
     # WARNING: "7" (instead of "2") is wrong on purpose, to fail task and get dump
-    t_conn.upload_file_chunk(t["model_id"], t["file_id"], data[: len(data) // 7], 0)
-    t_conn.upload_file_chunk(
-        t["model_id"],
-        t["file_id"],
-        gzip.compress(data[len(data) // 2 :]),
-        1,
-        utils.MIMEType.APP_GZIP,
-    )
-    t_conn.set_file_upload_complete(t["model_id"], t["file_id"])
+    t_conn.upload_file(t["model_id"], t["file_id"], [data[: len(data) // 20],data[len(data) // 2 :]])
 
     i_task = t_conn.run_import(t["model_id"], t["import_id"]).json()["task"]["taskId"]
     assert contains(t_conn.get_import_tasks(t["model_id"], t["import_id"]), i_task)
@@ -285,3 +276,4 @@ def test(config_json_path):
             date_from=int((now - 3600) * 1000), date_to=int(now * 1000)
         ).content
     )
+    t_auth.close()
