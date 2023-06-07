@@ -98,6 +98,18 @@ class TransactionalConnection(BasicConnection):
         """Get info about all models to which a specified user has access."""
         return self.request("GET", f"{self._api_main_url}/users/{user_id}/models")
 
+    def delete_models(self, workspace_id: str, models_ids: [str]) -> Response:
+        """Delete models from a workspace.
+
+        **WARNING**: This query is destructive - use with caution! It will only work on
+        closed models - you can close a model in Anaplan web interface via Manage Tasks.
+        """
+        return self.request(
+            "POST",
+            f"{self._api_main_url}/workspaces/{workspace_id}/bulkDeleteModels",
+            data=json.dumps({"modelIdsToDelete": models_ids}),
+        )
+
     # Calendar
     def get_fiscal_year(self, model_id: str):
         """Get current fiscal year setting for a specified model."""
@@ -267,11 +279,9 @@ class TransactionalConnection(BasicConnection):
         )
 
     def reset_list_index(self, model_id: str, list_id: str) -> Response:
-        """Try to reset index of a specified numbered list.
+        """Reset index of a specified numbered list.
 
-        **WARNING**: This action works only for numbered lists, and only if the index
-        is at least 900 million. You can check current value of nextItemIndex using
-        TransactionalConnection.get_list().
+        **WARNING**: This action works only for numbered lists that are empty.
         """
         return self.request(
             "POST", f"{self._api_main_url}/models/{model_id}/lists/{list_id}/resetIndex"

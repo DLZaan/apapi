@@ -13,7 +13,7 @@ As an abstract example, here we export some CSV and import it back to Anaplan:
 >> > with apapi.BasicAuth(f"{email}:{password}") as authentication:
     >> > my_connection = apapi.BulkConnection(authentication)
 >> > my_connection.run_export(model_id, export_id)
->> > data = my_connection.download_file(model_id, export_id)
+>> > data = my_connection.get_file(model_id, export_id)
 >> > print(data.decode())
 Versions, Data, Text
 Actual, 1, test
@@ -38,7 +38,7 @@ APAPI supports Python 3.9+.
 ## More Info
 - [Official Anaplan APIs Postman Collection](https://www.postman.com/apiplan/workspace/official-anaplan-collection/overview)
 - [Official documentation of Anaplan APIs](https://help.anaplan.com/da432e9b-24dd-4884-a70e-a3e409201e5c-Anaplan-API)
-- [Official documentation of Anaplan Connect V4 (Java)](https://anaplanenablement.s3.amazonaws.com/Community/Anapedia/Anaplan_Connect._User_Guide_v4.0.3.pdf)
+- [Official documentation of Anaplan Connect V4 (Java)](https://anaplanenablement.s3.amazonaws.com/Community/Anapedia/Anaplan-Connector-Informatica-V.4.2.1.pdf)
 - [Official Anaplan Connect repository](https://github.com/anaplaninc/anaplan-java-client)
 
 ## How to Contribute

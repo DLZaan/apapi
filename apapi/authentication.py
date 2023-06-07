@@ -107,6 +107,7 @@ class AbstractAuth(ABC):
             if self._timer:
                 self._timer.cancel()
             self.session.post(f"{self._auth_url}/token/logout")
+            logging.info(f"Logout successful!")
         finally:
             self.session.close()
 

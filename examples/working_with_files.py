@@ -38,7 +38,8 @@ def main():
             return
         print("Export OK - downloading file")
         # we use the fact (undocumented!) that for exports action_id=file_id
-        # for bigger files: data_out = conn.download_file(t["model_id"], t["export_id"])
+        # for bigger files:
+        # data_out = b"".join(conn.download_file(t["model_id"], t["export_id"]))
         data_out = conn.get_file(t["model_id"], t["export_id"]).content
         # now you can save your data to file (hint: it's better to use absolute paths)
         with open("Anaplan_test.csv", "wb") as file:
@@ -50,6 +51,8 @@ def main():
         with open("Anaplan_test.csv", "rb") as file:
             data_in = file.read()
         # upload data to Anaplan
+        # for bigger files:
+        # conn.upload_file(t["model_id"], t["file_id"], [data_in])
         conn.put_file(t["model_id"], t["file_id"], data_in)
         # run import - you should get task ID, which you can use to monitor the job
         i_task = conn.run_import(t["model_id"], t["import_id"]).json()["task"]["taskId"]
