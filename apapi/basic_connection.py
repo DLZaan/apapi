@@ -4,6 +4,7 @@ apapi.basic_connection
 This module provides a Basic Connection class,
 which should be used to connect to Anaplan APIs.
 """
+from __future__ import annotations
 
 import logging
 

@@ -3,6 +3,7 @@ apapi.transactional
 
 Child of Basic Connection class, responsible for Transactional API capabilities.
 """
+from __future__ import annotations
 
 import json
 from typing import Iterable

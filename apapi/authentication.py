@@ -3,6 +3,8 @@ apapi.authentication
 
 This module provides helper classes for authentication needs.
 """
+from __future__ import annotations
+
 import json
 import logging
 from abc import ABC, abstractmethod
