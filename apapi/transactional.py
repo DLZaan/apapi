@@ -94,6 +94,13 @@ class TransactionalConnection(BasicConnection):
             {"modelDetails": self.details if details is None else details},
         )
 
+    def get_model_status(self, model_id: str) -> Response:
+        """Get info about model's current state."""
+        return self.request(
+            "GET",
+            f"{self._api_main_url}/models/{model_id}/status",
+        )
+
     def get_user_models(self, user_id: str) -> Response:
         """Get info about all models to which a specified user has access."""
         return self.request("GET", f"{self._api_main_url}/users/{user_id}/models")

@@ -27,6 +27,7 @@ def test(config_json_path):
     t_conn.get_models()
     t_conn.get_workspace_models(t["workspace_id"])
     t_conn.get_model(t["model_id"])
+    t_conn.get_model_status(t["model_id"])
     t_conn.get_user_models(me["id"])
     # dummy ID - it should still return 200, just give an error in nested results
     t_conn.delete_models(t["workspace_id"], ["123"])
