@@ -4,6 +4,8 @@ apapi.alm
 Child of Basic Connection class, responsible for
 Application Lifecycle Management API capabilities
 """
+from __future__ import annotations
+
 import json
 
 from requests import Response

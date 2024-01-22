@@ -2,7 +2,7 @@ import os
 
 from setuptools import find_packages, setup
 
-REQUIRES_PYTHON = "~=3.9"
+REQUIRES_PYTHON = "~=3.8"
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -52,6 +52,7 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",

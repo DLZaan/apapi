@@ -4,6 +4,7 @@ apapi.utils
 This module provides utility classes, functions & constants that are used within APAPI,
 and might be useful for external consumption as well.
 """
+from __future__ import annotations
 
 import json
 from enum import Enum
