@@ -64,7 +64,7 @@ class AuditConnection(BasicConnection):
         """
         Retrieve Audit Events for tenant.
 
-        This function is practically an alternative for AuditConnection.get_events().
+        This function is practically an alternative for `get_events()`.
         """
         params = {
             "type": event_type.value,
