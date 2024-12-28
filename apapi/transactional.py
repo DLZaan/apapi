@@ -60,7 +60,7 @@ class TransactionalConnection(BasicConnection):
         )
 
     def get_workspace(self, workspace_id: str, details: bool = None) -> Response:
-        """Get info about all a specified workspace."""
+        """Get info about a specified workspace."""
         return self.request(
             "GET",
             f"{self._api_main_url}/workspaces/{workspace_id}",
