@@ -1,6 +1,6 @@
 [tool.isort]
 profile="black"
-py_version=39
+py_version=38
 virtual_env="venv"
 skip_gitignore=true
 honor_noqa=true

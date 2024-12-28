@@ -33,7 +33,7 @@ APAPI is available on [PyPI](https://pypi.org/project/apapi/):
 ```console
 $ python -m pip install apapi
 ```
-APAPI supports Python 3.9+.
+APAPI supports Python 3.8+.
 
 ## More Info
 - [Official Anaplan APIs Postman Collection](https://www.postman.com/apiplan/workspace/official-anaplan-collection/overview)

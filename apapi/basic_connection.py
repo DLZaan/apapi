@@ -5,6 +5,8 @@ This module provides a Basic Connection class,
 which should be used to connect to Anaplan APIs.
 """
 
+from __future__ import annotations
+
 import logging
 
 from requests import Response, Session
@@ -29,7 +31,7 @@ class BasicConnection:
         """Used as default for "details" argument for some functions."""
         self.compress: bool = True
         """Used as default for "compress" argument for some functions."""
-        self.timeout: float = 3.5
+        self.timeout: float = 30
         """Timeout (in seconds) of all requests exchanged with Anaplan API."""
         self.authentication: AbstractAuth = authentication
         """Authentication object which should contain authenticated session """

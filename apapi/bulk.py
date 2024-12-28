@@ -3,6 +3,9 @@ apapi.bulk
 
 Child of Basic Connection class, responsible for Bulk API capabilities
 """
+
+from __future__ import annotations
+
 import json
 
 from requests import Response

@@ -4,6 +4,8 @@ apapi.connection
 This module provides Connection class, which contains all available API functions.
 """
 
+from __future__ import annotations
+
 from .alm import ALMConnection
 from .audit import AuditConnection
 from .bulk import BulkConnection

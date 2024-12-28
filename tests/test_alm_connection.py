@@ -1,5 +1,5 @@
 import json
-from time import time
+from time import strftime
 
 from apapi import ALMConnection, BasicAuth, utils
 
@@ -21,7 +21,7 @@ def test(config_json_path):
     # Revisions
     previous_revision = t_conn.get_latest_revision(t["model_id"]).json()["revisions"][0]
     new_revision = t_conn.add_revision(
-        t["model_id"], str(time()), "Test revision by APAPI"
+        t["model_id"], strftime("%Y-%m-%dT%H:%M:%S"), "Test revision by APAPI"
     ).json()["revision"]
     revisions = t_conn.get_revisions(t["model_id"]).json()["revisions"]
     syncable_revisions = t_conn.get_syncable_revisions(

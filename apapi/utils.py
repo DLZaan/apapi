@@ -5,6 +5,8 @@ This module provides utility classes, functions & constants that are used within
 and might be useful for external consumption as well.
 """
 
+from __future__ import annotations
+
 import json
 from enum import Enum
 from typing import Final
@@ -80,6 +82,8 @@ ENCODING_GZIP: Final[str] = "gzip,deflate"
 """Optional encoding label, used when data uploaded is compressed."""
 PAGING_LIMIT: Final[int] = 2147483647
 """Max value for paging limit (2^31-1), needed for some endpoints where default is 20"""
+AUDIT_LIMIT: Final[int] = 10000
+"""Max value for Audit API paging limit"""
 
 
 def get_generic_session(retry_count: int = 3) -> Session:
