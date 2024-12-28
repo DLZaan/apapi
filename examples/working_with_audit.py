@@ -1,6 +1,7 @@
 """
 This script shows how to automate audit logs retrieval from Anaplan
 """
+
 import json
 from datetime import date, datetime, timedelta, timezone
 

@@ -1,6 +1,7 @@
 """
 This script shows how to obtain OAuth2 token and use it to authenticate to Anaplan APIs.
 """
+
 import json
 from time import sleep
 

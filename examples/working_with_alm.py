@@ -1,6 +1,7 @@
 """
 This script shows how to automate synchronization between Anaplan models
 """
+
 import json
 import time
 

@@ -1,6 +1,7 @@
 """
 This script shows how to use Transactional API to review and edit lists
 """
+
 import json
 from time import sleep
 

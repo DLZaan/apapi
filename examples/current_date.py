@@ -1,6 +1,7 @@
 """
 This script shows how to automate current date update for Anaplan models
 """
+
 import json
 from datetime import date, datetime
 

@@ -1,6 +1,7 @@
 """
 This script shows how to get some general information about a model
 """
+
 import json
 
 from apapi import Connection, OAuth2NonRotatable
