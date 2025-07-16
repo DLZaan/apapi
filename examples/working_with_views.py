@@ -1,6 +1,7 @@
 """
 This script shows how to use Transactional API to read and write data without actions
 """
+
 import json
 from time import sleep
 

@@ -5,6 +5,8 @@ Child of Basic Connection class, responsible for Transactional API capabilities.
 """
 from __future__ import annotations
 
+from __future__ import annotations
+
 import json
 from typing import Iterable
 
@@ -33,8 +35,7 @@ class TransactionalConnection(BasicConnection):
     def get_workspace_users(self, workspace_id: str) -> Response:
         """Get info about users with access to a specified workspace."""
         return self.request(
-            "GET",
-            f"{self._api_main_url}/workspaces/{workspace_id}/users",
+            "GET", f"{self._api_main_url}/workspaces/{workspace_id}/users"
         )
 
     def get_workspace_admins(self, workspace_id: str) -> Response:
@@ -59,7 +60,7 @@ class TransactionalConnection(BasicConnection):
         )
 
     def get_workspace(self, workspace_id: str, details: bool = None) -> Response:
-        """Get info about all a specified workspace."""
+        """Get info about a specified workspace."""
         return self.request(
             "GET",
             f"{self._api_main_url}/workspaces/{workspace_id}",
@@ -94,6 +95,10 @@ class TransactionalConnection(BasicConnection):
             f"{self._api_main_url}/models/{model_id}",
             {"modelDetails": self.details if details is None else details},
         )
+
+    def get_model_status(self, model_id: str) -> Response:
+        """Get info about model's current state."""
+        return self.request("GET", f"{self._api_main_url}/models/{model_id}/status")
 
     def get_user_models(self, user_id: str) -> Response:
         """Get info about all models to which a specified user has access."""
@@ -170,7 +175,7 @@ class TransactionalConnection(BasicConnection):
         """Get list's items, up to a million lines.
 
         **WARNING**: This query can be used to retrieve information for smaller lists.
-        For larger lists use large_list_read functions.
+        For larger lists use `start_large_list_read()` and functions connected to it.
 
         Extra details (selective access, subsets and properties) are available.
         Returned data can be either in JSON (default) or CSV format.
@@ -212,9 +217,9 @@ class TransactionalConnection(BasicConnection):
         """Get a page of data of a specified large list read request.
 
         You can get information about haw many pages are already available using
-        TransactionalConnection.get_large_list_read_status().
+        `get_large_list_read_status()`.
         If there are i.e. 10 available pages, it means that pages from 0 to 9 are ready.
-        You can clean after read using TransactionalConnection.delete_large_list_read().
+        You can clean after read using `delete_large_list_read()`.
         """
         headers = {"Accept": MIMEType.TEXT_CSV.value}
         if compress or (compress is None and self.compress):
@@ -391,7 +396,7 @@ class TransactionalConnection(BasicConnection):
         """Get cells values for a specified view, up to a million cells.
 
         **WARNING**: This query can be used to retrieve information for smaller views.
-        For larger views use large_cell_read functions.
+        For larger views use `start_large_cell_read()` and functions connected to it.
 
         Pages argument should be iterable collection of dimensionId & itemId strings
         in a form of key-value pairs joined by ":" (colon),
@@ -420,7 +425,7 @@ class TransactionalConnection(BasicConnection):
     ) -> Response:
         """Start large cell read, which allows getting unlimited cells for a view.
 
-        Returned data grid mode should be set using apapi.utils.ExportType.
+        Returned data grid mode should be set using `apapi.utils.ExportType`.
         """
         return self.request(
             "POST",
@@ -451,9 +456,9 @@ class TransactionalConnection(BasicConnection):
         """Get a page of data of a specified large cell read request.
 
         You can get information about haw many pages are already available using
-        TransactionalConnection.get_large_cell_read_status().
+        `get_large_cell_read_status()`.
         If there are i.e. 10 available pages, it means that pages from 0 to 9 are ready.
-        You can clean after read using TransactionalConnection.delete_large_cell_read().
+        You can clean after read using `delete_large_cell_read()`.
         """
         headers = {"Accept": MIMEType.TEXT_CSV.value}
         if compress or (compress is None and self.compress):

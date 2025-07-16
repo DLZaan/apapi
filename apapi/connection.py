@@ -5,6 +5,8 @@ This module provides Connection class, which contains all available API function
 """
 from __future__ import annotations
 
+from __future__ import annotations
+
 from .alm import ALMConnection
 from .audit import AuditConnection
 from .bulk import BulkConnection

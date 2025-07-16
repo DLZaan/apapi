@@ -35,7 +35,7 @@ setup(
     url=about["__url__"],
     license=about["__license__"],
     platforms="any",
-    keywords="anaplan anaplanapi anaplanconnector client",
+    keywords="anaplan anaplanapi anaplanconnector anaplanlibrary client",
     packages=find_packages(),
     include_package_data=True,
     python_requires=REQUIRES_PYTHON,
@@ -44,7 +44,7 @@ setup(
         "dev": dev_requires,
     },
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Natural Language :: English",
@@ -56,13 +56,14 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Topic :: Office/Business :: Financial",
         "Topic :: Software Development :: Libraries",
     ],
     project_urls={
         "Documentation": "https://dlzaan.github.io/apapi/apapi.html",
         "Source": "https://github.com/DLZaan/apapi",
-        "Changelog": "https://pip.pypa.io/en/stable/news/",
+        "Changelog": "https://github.com/DLZaan/apapi/releases",
     },
     entry_points={
         "console_scripts": [

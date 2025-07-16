@@ -3,6 +3,7 @@ apapi.authentication
 
 This module provides helper classes for authentication needs.
 """
+
 from __future__ import annotations
 
 import json
@@ -82,7 +83,9 @@ class AbstractAuth(ABC):
     def _handle_token(self, token_info: dict) -> None:
         self.session.auth = AnaplanAuth("AnaplanAuthToken " + token_info["tokenValue"])
         # Anaplan yields "expiresAt" in ms, that's why we need to divide it by 1000
-        self._timer = Timer(token_info["expiresAt"] / 1000 - time(), self.refresh_token)
+        self._timer = Timer(
+            token_info["expiresAt"] / 1000 - time() - 30, self.refresh_token
+        )
         self._timer.start()
 
     def refresh_token(self) -> None:
@@ -179,7 +182,7 @@ class OAuth2NonRotatable(AbstractAuth):
             logging.error(f"Tried to authenticate, access token missing: {response}")
             raise ConnectionError("Unable to authenticate")
         self.session.auth = AnaplanAuth("AnaplanAuthToken " + response["access_token"])
-        self._timer = Timer(response["expires_in"], self.refresh_token)
+        self._timer = Timer(response["expires_in"] - 30, self.refresh_token)
         self._timer.start()
 
 
@@ -224,5 +227,5 @@ class OAuth2Rotatable(AbstractAuth):
             logging.error(f"Tried to authenticate, access token missing: {response}")
             raise ConnectionError("Unable to authenticate")
         self.session.auth = AnaplanAuth("AnaplanAuthToken " + response["access_token"])
-        self._timer = Timer(response["expires_in"], self.refresh_token)
+        self._timer = Timer(response["expires_in"] - 30, self.refresh_token)
         self._timer.start()

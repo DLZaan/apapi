@@ -3,6 +3,7 @@ This script shows how to automate current period & switchover update in Anaplan 
 **WARNING**: Running this script (especially moving version's switchover) may lead
 to data loss - execute this script as an experiment only on non-production models
 """
+
 import datetime
 import json
 

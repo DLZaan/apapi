@@ -3,6 +3,7 @@ apapi.audit
 
 Child of Basic Connection class, responsible for Audit API capabilities
 """
+
 from __future__ import annotations
 
 import json
@@ -11,7 +12,7 @@ from requests import Response
 
 from .authentication import AbstractAuth
 from .basic_connection import BasicConnection
-from .utils import API_URL, AUDIT_URL, PAGING_LIMIT, AuditEventType, MIMEType
+from .utils import API_URL, AUDIT_LIMIT, AUDIT_URL, AuditEventType, MIMEType
 
 
 class AuditConnection(BasicConnection):
@@ -37,7 +38,7 @@ class AuditConnection(BasicConnection):
         """Retrieve Audit Events for tenant."""
         params = {
             "type": event_type.value,
-            "limit": PAGING_LIMIT,  # needed for this endpoint, as default is 20
+            "limit": AUDIT_LIMIT,  # default is 20, max is 10k, so let's use maximum
         }
         if date_from:
             params["dateFrom"] = date_from
@@ -63,11 +64,11 @@ class AuditConnection(BasicConnection):
         """
         Retrieve Audit Events for tenant.
 
-        This function is practically an alternative for AuditConnection.get_events().
+        This function is practically an alternative for `get_events()`.
         """
         params = {
             "type": event_type.value,
-            "limit": PAGING_LIMIT,  # needed for this endpoint, as default is 20
+            "limit": AUDIT_LIMIT,  # default is 20, max is 10k, so let's use maximum
         }
         data = {}
         if date_from:
