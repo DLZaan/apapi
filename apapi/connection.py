@@ -3,6 +3,7 @@ apapi.connection
 
 This module provides Connection class, which contains all available API functions.
 """
+from __future__ import annotations
 
 from __future__ import annotations
 
