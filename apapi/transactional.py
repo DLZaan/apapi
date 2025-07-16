@@ -34,8 +34,7 @@ class TransactionalConnection(BasicConnection):
     def get_workspace_users(self, workspace_id: str) -> Response:
         """Get info about users with access to a specified workspace."""
         return self.request(
-            "GET",
-            f"{self._api_main_url}/workspaces/{workspace_id}/users",
+            "GET", f"{self._api_main_url}/workspaces/{workspace_id}/users"
         )
 
     def get_workspace_admins(self, workspace_id: str) -> Response:
@@ -98,10 +97,7 @@ class TransactionalConnection(BasicConnection):
 
     def get_model_status(self, model_id: str) -> Response:
         """Get info about model's current state."""
-        return self.request(
-            "GET",
-            f"{self._api_main_url}/models/{model_id}/status",
-        )
+        return self.request("GET", f"{self._api_main_url}/models/{model_id}/status")
 
     def get_user_models(self, user_id: str) -> Response:
         """Get info about all models to which a specified user has access."""

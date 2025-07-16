@@ -5,4 +5,4 @@ __version__ = "0.6.0"  # also needs to be bumped in docs/module.html.jinja2
 __author__ = "Milosz Kierepka"
 __author_email__ = "milosz.kierepka+work@gmail.com"
 __license__ = "Apache 2.0"
-__copyright__ = "Copyright 2022-2024 Milosz Kierepka"
+__copyright__ = "Copyright 2022-2025 Milosz Kierepka"

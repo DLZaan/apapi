@@ -1,5 +1,5 @@
 -r requirements.txt
-black~=24.10
+black~=25.0
 isort~=5.13
 pdoc~=15.0
 twine~=4.0

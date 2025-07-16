@@ -21,8 +21,7 @@ class BulkConnection(BasicConnection):
     def generic_get_actions(self, model_id: str, action_type: str) -> Response:
         """Get the list of available actions of given type."""
         return self.request(
-            "GET",
-            f"{self._api_main_url}/models/{model_id}/{action_type}",
+            "GET", f"{self._api_main_url}/models/{model_id}/{action_type}"
         )
 
     def get_imports(self, model_id: str) -> Response:
@@ -177,8 +176,7 @@ class BulkConnection(BasicConnection):
     def delete_file(self, model_id: str, file_id: str) -> Response:
         """Delete previously uploaded file from the model's memory."""
         return self.request(
-            "DELETE",
-            f"{self._api_main_url}/models/{model_id}/files/{file_id}",
+            "DELETE", f"{self._api_main_url}/models/{model_id}/files/{file_id}"
         )
 
     # Run action

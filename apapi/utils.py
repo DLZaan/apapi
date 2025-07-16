@@ -59,7 +59,9 @@ class AuditEventType(Enum):
 
 
 API_URL: Final[str] = "https://api.anaplan.com"
-"""Default Anaplan API base URL for most services."""
+"""Default Anaplan API base URL for most services.
+Equivalent for browser usage: https://us1a.app.anaplan.com
+"""
 AUDIT_URL: Final[str] = "https://audit.anaplan.com"
 """Default Anaplan API base URL for audit services."""
 AUTH_URL: Final[str] = "https://auth.anaplan.com"
